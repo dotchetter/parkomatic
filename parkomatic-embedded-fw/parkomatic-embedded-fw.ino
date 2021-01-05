@@ -1,11 +1,8 @@
-void setup() {
-  // put your setup code here, to run once:
 #include <MPU6050_tockn.h>
+#include <Wire.h>
+#include "defines.h"
 
-}
 
-void loop() {
-  // put your main code here, to run repeatedly:
 /*
 Parkomatic main firmware file
 
