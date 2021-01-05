@@ -6,7 +6,21 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
+/*
+Parkomatic main firmware file
 
+This file contains firmware testing for 
+Accelerometer driver software. 
+
+Physical connections for MPU6050:
+
+Vcc  --> 5v
+Gnd  --> Gnd
+SCL  --> SCL
+SDA  --> SDA
+XDA  --> A4
+XCL  --> A5
+*/
 }
 
 
