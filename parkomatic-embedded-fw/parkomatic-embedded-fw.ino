@@ -18,6 +18,15 @@ SDA  --> SDA
 XDA  --> A4
 XCL  --> A5
 */
+
+MPU6050 accelerometer(Wire);
+
+void setup() 
+{
+	Serial.begin(38400);
+	Wire.begin();
+	accelerometer.begin();
+	accelerometer.calcGyroOffsets(true);
 }
 
 
