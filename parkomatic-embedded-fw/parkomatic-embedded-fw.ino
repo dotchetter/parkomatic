@@ -44,11 +44,11 @@ void http_connect()
 		}
 	}
 
-	Serial.println(F("Connecting to server... "));
+	Serial.print(F("Connecting to server... "));
 
 	if (client.connect(server, port)) 
 	{
-		Serial.print(F(" success."));
+		Serial.println(F(" success."));
 	
 		client.print("GET ");
 		client.print(path);
