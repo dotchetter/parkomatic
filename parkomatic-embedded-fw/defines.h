@@ -16,5 +16,7 @@
 #define SECOND                       1000UL
 #define MINUTE                       60 * SECOND
 #define INTERVAL                     1 * SECOND
-#define GSM_CONNECT_MAX_DURATION     10 * SECOND
 
+
+#define GSM_CONNECT_MAX_DURATION     10 * SECOND
+#define POLL_TIME_LIMIT				 5 * MINUTE
