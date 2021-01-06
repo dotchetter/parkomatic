@@ -64,21 +64,29 @@ void http_connect()
 	}
 }
 
+
 void loop() 
 {
-	if (client.available())
-	{
-		char c = client.read();
-		Serial.print(c);
-	}
+	uint32_t poll_start = millis();
 
-	if (!client.available() && !client.connected()) 
+	http_connect();
+	
+	while(millis() - poll_start < POLL_TIME_LIMIT)
 	{
-		Serial.println();
-		Serial.println("disconnecting.");
-		client.stop();
-		
-		Serial.println("done.");
-		while(1){}
+		if (client.available())
+		{
+			char c = client.read();
+			Serial.print(c);
+		}
+
+		if (!client.available() && !client.connected()) 
+		{
+			Serial.println();
+			Serial.println("disconnecting.");
+			client.stop();
+			break;			
+		}		
 	}
+	Serial.println("done, softlocking =)");
+	while(1){}
 }
