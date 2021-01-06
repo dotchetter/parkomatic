@@ -18,7 +18,7 @@ int port = 80;
 
 void setup() 
 {
-	Serial.begin(9600);
+	Serial.begin(2000000);
 	while (!Serial) {;}
 
 	Serial.println("Starting Arduino web client.");
