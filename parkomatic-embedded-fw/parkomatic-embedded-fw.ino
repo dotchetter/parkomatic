@@ -10,6 +10,8 @@ GSMClient client;
 GPRS gprs;
 GSM gsmAccess;
 
+void http_connect();
+
 char server[] = "worldtimeapi.org";
 char path[] = "/api/timezone/Europe/Stockholm.txt";
 int port = 80; 
@@ -21,6 +23,11 @@ void setup()
 
 	Serial.println("Starting Arduino web client.");
 
+}
+
+
+void http_connect()
+{
 	bool connected = false;
 
 	while (!connected) 
