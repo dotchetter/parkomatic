@@ -100,11 +100,13 @@ void loop() {
   // poll for new MQTT messages and send keep alives
   mqttClient.poll();
 
+  char* msg = "testar";
   // publish a message roughly every 5 seconds.
   if (millis() - lastMillis > 5000) {
     lastMillis = millis();
 
     publishMessage();
+    publishMessage(msg);
   }
 }
 
@@ -148,12 +150,13 @@ void connectMQTT() {
 }
 
 void publishMessage() {
+void publishMessage(char* msg) {
   Serial.println("Publishing message");
 
   // send message, the Print interface can be used to set the message contents
   mqttClient.beginMessage("devices/" + deviceId + "/messages/events/");
-  mqttClient.print("hello ");
   mqttClient.print(millis());
+  mqttClient.print(msg);
   mqttClient.endMessage();
 }
 
