@@ -49,14 +49,17 @@ void setup() {
   while (!Serial);
 
  /* if (!ECCX08.begin()) {
+  if (!ECCX08.begin()) {
     Serial.println("No ECCX08 present!");
     while (1);
   }*/
 
   // reconstruct the self signed cert
 /*  ECCX08SelfSignedCert.beginReconstruction(0, 8);
+  ECCX08SelfSignedCert.beginReconstruction(0, 8);
   ECCX08SelfSignedCert.setCommonName(ECCX08.serialNumber());
   ECCX08SelfSignedCert.endReconstruction();*/
+  ECCX08SelfSignedCert.endReconstruction();
 
   // Set a callback to get the current time
   // used to validate the servers certificate
