@@ -157,6 +157,7 @@ void publishMessage(char* msg) {
   mqttClient.beginMessage("devices/" + deviceId + "/messages/events/");
   mqttClient.print(millis());
   mqttClient.print(msg);
+  //mqttClient.print(millis());
   mqttClient.endMessage();
 }
 
