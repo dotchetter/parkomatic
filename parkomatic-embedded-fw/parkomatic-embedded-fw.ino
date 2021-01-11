@@ -177,18 +177,6 @@ void loop()
 
 	mqttClient.poll();
 
-    http_connect();
-    
-    while(millis() - poll_start < POLL_TIME_LIMIT)
-    {
-        if (client.available())
-        {
-            char c = client.read();
-            Serial.print(c);
-        }
-
-        if (!client.available() && !client.connected()) 
-        {
 	if (millis() - last_publish > PUBLISH_INTERVAL)
 	{
 		#ifdef DEVMODE 
