@@ -1,3 +1,6 @@
+#ifndef _DEFINES_H_
+#define _DEFINES_H_
+
 /*
     2021-01-06 Simon Olofsson, Anton Norell
     Parkomatic* firmware defines file
@@ -20,6 +23,6 @@
 #define MINUTE                       60 * SECOND
 #define INTERVAL                     1 * SECOND
 
+#define DEVMODE                      1
 
-#define GSM_CONNECT_MAX_DURATION     10 * SECOND
-#define POLL_TIME_LIMIT				 5 * MINUTE
+#endif // _DEFINES_H_#define POLL_TIME_LIMIT				 5 * MINUTE
