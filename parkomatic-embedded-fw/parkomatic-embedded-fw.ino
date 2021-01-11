@@ -46,12 +46,13 @@ void setup()
     /* Use the deiceId define as the MQTT client id */
     mqttClient.setId(deviceId);
 
-    sprintf(mqtt_username_buf, 
+    /* Format strings used in communications */
+    sprintf(mqtt_username, 
             "%s/%s/api-version=2018-06-30", 
             SECRET_BROKER, 
             SECRET_DEVICE_ID);
 
-    mqttClient.setUsernamePassword(mqtt_username_buf, "");
+    mqttClient.setUsernamePassword(mqtt_username, "");
 
     /* Bind the callback for which method to execute upon 
        recieved mqtt message */
