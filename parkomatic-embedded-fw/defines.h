@@ -10,9 +10,9 @@
 #define SECRET_GPRS_APN              ""  
 #define SECRET_GPRS_LOGIN            ""    
 #define SECRET_GPRS_PASSWORD         ""   
-#define SECRET_BROKER                "antons-iothub.azure-devices.net"
-#define SECRET_DEVICE_ID             "antons-device"
-#define MQTT_PORT                     8883
+#define SECRET_BROKER                ""
+#define SECRET_DEVICE_ID             ""
+#define MQTT_PORT				     8883
 
 /* Intervals and time definitions */
 
@@ -22,4 +22,4 @@
 
 
 #define GSM_CONNECT_MAX_DURATION     10 * SECOND
-#define POLL_TIME_LIMIT                 5 * MINUTE
+#define POLL_TIME_LIMIT				 5 * MINUTE
