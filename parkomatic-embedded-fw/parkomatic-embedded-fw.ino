@@ -19,7 +19,6 @@ String deviceId = SECRET_DEVICE_ID;
 void setup() 
 {
 	#ifdef DEVMODE
-
     Serial.begin(2000000);
 	while (!Serial);				// blocking
 	Serial.println("DEVMODE flag activated. This alters the behavior of the device.\n\n");
