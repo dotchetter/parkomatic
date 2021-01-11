@@ -136,7 +136,19 @@ void mqtt_recieve(int size)
 
 void loop() 
 {
-    uint32_t poll_start = millis();
+    static uint32_t last_publish;
+
+	if (gsmAccess.status() != GSM_READY || gprs.status() != GPRS_READY)
+	{
+		connect_to_gsm();
+	}
+
+	if (!mqttClient.connected())
+	{
+		connect_to_azure();
+	}
+
+	mqttClient.poll();
 
     http_connect();
     
