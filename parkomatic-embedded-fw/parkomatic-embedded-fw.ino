@@ -13,28 +13,30 @@ const char GPRS_APN[]      = SECRET_GPRS_APN;
 const char GPRS_LOGIN[]    = SECRET_GPRS_LOGIN;
 const char GPRS_PASSWORD[] = SECRET_GPRS_PASSWORD;
 
-/* Global instances */
-
-GSMClient client;
+/* GSM connectivity singletons */
 GPRS gprs;
 GSM gsmAccess;
 
+GSMClient gsmClient;
+BearSSLClient sslClient(gsmClient);
+MqttClient mqttClient(sslClient);
 
 void setup() 
 {
-
     char mqtt_username_buf[100];
 
     Serial.begin(2000000);
-    while (!Serial) {;}
 
-    /* 
-     Set a callback to get the current time
-     used to validate the servers certificate 
-    */
-    ArduinoBearSSL.onGetTime((getTime));
+    #ifdef DEBUG
+    while (!Serial) {}
+    #endif
 
-    /* Set the public key to be used with the certificate in the ECCX08 slot */
+    /* Set a callback to get the current time
+       used to validate the servers certificate */
+    ArduinoBearSSL.onGetTime(gsmAccess.getTime);
+
+    /* Set the public key to be used with the certificate 
+       in the ECCX08 slot */
     sslClient.setEccSlot(0,
                         ECCX08SelfSignedCert.bytes(),
                         ECCX08SelfSignedCert.length());
@@ -49,9 +51,9 @@ void setup()
 
     mqttClient.setUsernamePassword(mqtt_username_buf, "");
 
-    /* Bind the callback for which method to execute upon recieved mqtt message */
-    mqttClient.onMessage();    // TODO 
-
+    /* Bind the callback for which method to execute upon 
+       recieved mqtt message */
+    mqttClient.onMessage(mqtt_recieve);
 }
 
 
@@ -90,6 +92,19 @@ void mqtt_send(char* msg)
     mqttClient.print(*msg);
     mqttClient.print(millis());
     mqttClient.endMessage();
+}
+
+
+void mqtt_recieve(int size)
+{
+	Serial.print("Recieved message. Topic: ");
+	Serial.println(mqttClient.messageTopic());
+
+	while(mqttClient.available())
+	{
+		Serial.print((char)mqttClient.read());
+	}
+	Serial.println();
 }
 
 
