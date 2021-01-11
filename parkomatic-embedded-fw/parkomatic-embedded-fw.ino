@@ -3,7 +3,6 @@
 #include <ArduinoBearSSL.h>
 #include <ArduinoECCX08.h>
 #include <utility/ECCX08SelfSignedCert.h>
-#include <ArduinoMqttClient.h>
 #include "defines.h" 
 
 /* GSM connectivity singletons */
