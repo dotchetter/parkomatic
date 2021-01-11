@@ -6,13 +6,6 @@
 #include <ArduinoMqttClient.h>
 #include "defines.h" 
 
-/* Global constants */
-
-const char PINNUMBER[]     = SECRET_PINNUMBER;
-const char GPRS_APN[]      = SECRET_GPRS_APN;
-const char GPRS_LOGIN[]    = SECRET_GPRS_LOGIN;
-const char GPRS_PASSWORD[] = SECRET_GPRS_PASSWORD;
-
 /* GSM connectivity singletons */
 GPRS gprs;
 GSM gsmAccess;
