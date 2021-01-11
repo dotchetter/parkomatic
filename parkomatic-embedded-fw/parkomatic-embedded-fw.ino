@@ -108,7 +108,7 @@ void connect_to_azure()
 void mqtt_send(char* msg)
 {
     mqttClient.beginMessage("devices/" + deviceId + "/messages/events/");
-    mqttClient.print(*msg);
+    mqttClient.print(msg);
     mqttClient.print(millis());
     mqttClient.endMessage();
 }
