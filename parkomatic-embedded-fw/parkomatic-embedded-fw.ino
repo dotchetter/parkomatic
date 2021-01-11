@@ -21,6 +21,9 @@ GSMClient gsmClient;
 BearSSLClient sslClient(gsmClient);
 MqttClient mqttClient(sslClient);
 
+char mqtt_username[100];
+String deviceId = SECRET_DEVICE_ID;
+
 void setup() 
 {
 	#ifdef DEVMODE
