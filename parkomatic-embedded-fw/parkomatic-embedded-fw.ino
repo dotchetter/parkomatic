@@ -42,7 +42,7 @@ void setup()
 
     /* Set a callback to get the current time
        used to validate the servers certificate */
-    ArduinoBearSSL.onGetTime(gsmAccess.getTime);
+    ArduinoBearSSL.onGetTime(getGsmTime);
 
     /* Set the public key to be used with the certificate 
        in the ECCX08 slot */
