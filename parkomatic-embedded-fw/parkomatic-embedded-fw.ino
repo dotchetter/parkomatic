@@ -32,6 +32,10 @@ void setup()
 	Serial.println("[INFO]: Cloud service used: Microsoft Azure");
 	Serial.println("[INFO]: Device starting up\n");
 	#endif
+	
+	ECCX08SelfSignedCert.beginReconstruction(0, 8);
+	ECCX08SelfSignedCert.setCommonName(ECCX08.serialNumber());
+	ECCX08SelfSignedCert.endReconstruction();
 
     /* Set a callback to get the current time
        used to validate the servers certificate */
