@@ -23,13 +23,15 @@ MqttClient mqttClient(sslClient);
 
 void setup() 
 {
-    char mqtt_username_buf[100];
+	#ifdef DEVMODE
 
     Serial.begin(2000000);
-
-    #ifdef DEBUG
-    while (!Serial) {}
-    #endif
+	while (!Serial);				// blocking
+	Serial.println("DEVMODE flag activated. This alters the behavior of the device.\n\n");
+	Serial.println("[INFO]: Parkomatic firmware version: 1.0.1");
+	Serial.println("[INFO]: Cloud service used: Microsoft Azure");
+	Serial.println("[INFO]: Device starting up\n");
+	#endif
 
     /* Set a callback to get the current time
        used to validate the servers certificate */
@@ -59,16 +61,19 @@ void setup()
 
 void connect_to_gsm()
 {
-    bool connected = false;
+	Serial.print("[DEBUG]: Connecting to GSM... ");
 
-    while ((gsmAccess.begin(PINNUMBER) != GSM_READY) ||
-           (gprs.attachGPRS(GPRS_APN, GPRS_LOGIN, GPRS_PASSWORD) != GPRS_READY)) 
+    while ((gsmAccess.begin(SECRET_PINNUMBER) != GSM_READY) ||
+           (gprs.attachGPRS(SECRET_GPRS_APN, SECRET_GPRS_LOGIN, SECRET_GPRS_PASSWORD) != GPRS_READY)) 
     {
-      Serial.println("Not connected");
-      delay(1000);
+		#ifdef DEVMODE 
+		Serial.println("[DEBUG]: Not connected");
+		#endif
+		delay(GSM_RECONNECT_INTERVAL);
     }
-
-    Serial.println("Connected to GSM");
+    #ifdef DEVMODE
+    Serial.println("[DEBUG]: connected.");
+    #endif
 }
 
 
@@ -78,7 +83,21 @@ void connect_to_azure()
     {
         Serial.print(".");
         Serial.println(mqttClient.connectError());
-        delay(5000); 
+			#ifdef DEVMODE
+			Serial.println("[DEBUG]: MQTT reached timeout for reconnects."); // Todo - handle this state
+			#endif
+			break;
+    		#ifdef DEVMODE 
+			Serial.println("[DEBUG]: Attempting to connect to the MQTT broker... ");
+    		#endif
+    			#ifdef DEVMODE #endif
+		    	Serial.print("[ERROR]: MQTT ran in to a problem. Error code: ");
+		        Serial.println(mqttClient.connectError());
+		        #endif
+    			#ifdef DEVMODE 
+				Serial.println("[DEBUG]: Connection to MQTT broker successful.");
+    			#endif
+    			break;
     }
 
     /* Subscribe to MQTT topic */
@@ -97,14 +116,21 @@ void mqtt_send(char* msg)
 
 void mqtt_recieve(int size)
 {
+	#ifdef DEVMODE 
 	Serial.print("Recieved message. Topic: ");
 	Serial.println(mqttClient.messageTopic());
+	#endif
 
 	while(mqttClient.available())
 	{
+		#ifdef DEVMODE 
 		Serial.print((char)mqttClient.read());
+		#endif
 	}
+	#ifdef DEVMODE
 	Serial.println();
+	#endif
+}
 }
 
 
@@ -124,12 +150,17 @@ void loop()
 
         if (!client.available() && !client.connected()) 
         {
-            Serial.println();
-            Serial.println("disconnecting.");
-            client.stop();
-            break;          
-        }       
-    }
-    Serial.println("done, softlocking =)");
-    while(1){}
+	if (millis() - last_publish > PUBLISH_INTERVAL)
+	{
+		#ifdef DEVMODE 
+		Serial.println("[DEBUG]: Publishing message");
+		#endif
+		mqtt_send("Hello from device");
+		last_publish = millis();
+	}
+
+	#ifdef DEVMODE
+	Serial.println("\n\n[INFO]: === Runtime completed. To try again, restart device ===");
+	while(1){};
+	#endif
 }

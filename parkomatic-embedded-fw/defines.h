@@ -21,7 +21,17 @@
 
 #define SECOND                       1000UL
 #define MINUTE                       60 * SECOND
-#define INTERVAL                     1 * SECOND
+
+#define GSM_RECONNECT_INTERVAL       5 * SECOND
+#define MQTT_RECONNECT_INTERVAL      5 * SECOND
+#define MQTT_RECONNECT_TIMEOUT       1 * MINUTE
+#define PUBLISH_INTERVAL             10 * SECOND
+
+/* 
+Devmode alters the device behavior in the following aspects:
+ - Runtime is blocking until UART is initiated on the terminal side
+ - Serial debug messages are ON 
+*/
 
 #define DEVMODE                      1
 
