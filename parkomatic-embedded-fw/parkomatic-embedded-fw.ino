@@ -48,17 +48,14 @@ void setup() {
   Serial.begin(9600);
   while (!Serial);
 
- /* if (!ECCX08.begin()) {
   if (!ECCX08.begin()) {
     Serial.println("No ECCX08 present!");
     while (1);
-  }*/
+  }
 
   // reconstruct the self signed cert
-/*  ECCX08SelfSignedCert.beginReconstruction(0, 8);
   ECCX08SelfSignedCert.beginReconstruction(0, 8);
   ECCX08SelfSignedCert.setCommonName(ECCX08.serialNumber());
-  ECCX08SelfSignedCert.endReconstruction();*/
   ECCX08SelfSignedCert.endReconstruction();
 
   // Set a callback to get the current time
@@ -101,11 +98,11 @@ void loop() {
   mqttClient.poll();
 
   char* msg = "testar";
+
   // publish a message roughly every 5 seconds.
   if (millis() - lastMillis > 5000) {
     lastMillis = millis();
 
-    publishMessage();
     publishMessage(msg);
   }
 }
@@ -149,13 +146,11 @@ void connectMQTT() {
   mqttClient.subscribe("devices/" + deviceId + "/messages/devicebound/#");
 }
 
-void publishMessage() {
 void publishMessage(char* msg) {
   Serial.println("Publishing message");
 
   // send message, the Print interface can be used to set the message contents
   mqttClient.beginMessage("devices/" + deviceId + "/messages/events/");
-  mqttClient.print(millis());
   mqttClient.print(msg);
   //mqttClient.print(millis());
   mqttClient.endMessage();
