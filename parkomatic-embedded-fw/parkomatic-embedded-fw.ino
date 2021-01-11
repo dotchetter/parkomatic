@@ -131,6 +131,11 @@ void mqtt_recieve(int size)
 	Serial.println();
 	#endif
 }
+
+
+unsigned long getGsmTime()
+{
+	return gsmAccess.getTime();
 }
 
 
