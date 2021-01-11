@@ -79,29 +79,44 @@ void connect_to_gsm()
 
 void connect_to_azure()
 {
-    while (!mqttClient.connect(broker, MQTT_PORT))
+	uint32_t connect_start_ms = millis();
+	uint32_t previous_connect_ms;
+	int mqtt_connected = 0;
+
+    while (1)
     {
-        Serial.print(".");
-        Serial.println(mqttClient.connectError());
+		if (millis() - connect_start_ms > MQTT_RECONNECT_TIMEOUT)
+		{
 			#ifdef DEVMODE
 			Serial.println("[DEBUG]: MQTT reached timeout for reconnects."); // Todo - handle this state
 			#endif
 			break;
+		}
+    	
+    	if (millis() - previous_connect_ms > MQTT_RECONNECT_INTERVAL)
+    	{
     		#ifdef DEVMODE 
 			Serial.println("[DEBUG]: Attempting to connect to the MQTT broker... ");
     		#endif
+    		
+    		previous_connect_ms = millis();
+    		
+    		if (!mqttClient.connect(SECRET_BROKER, MQTT_PORT))
+    		{
     			#ifdef DEVMODE #endif
 		    	Serial.print("[ERROR]: MQTT ran in to a problem. Error code: ");
 		        Serial.println(mqttClient.connectError());
 		        #endif
+    		}
+    		else
+    		{
     			#ifdef DEVMODE 
 				Serial.println("[DEBUG]: Connection to MQTT broker successful.");
     			#endif
     			break;
+    		}
+    	}
     }
-
-    /* Subscribe to MQTT topic */
-    mqttClient.subscribe("devices/" + deviceId + "/messages/devicebound/#");
 }
 
 
@@ -109,7 +124,6 @@ void mqtt_send(char* msg)
 {
     mqttClient.beginMessage("devices/" + deviceId + "/messages/events/");
     mqttClient.print(msg);
-    mqttClient.print(millis());
     mqttClient.endMessage();
 }
 
