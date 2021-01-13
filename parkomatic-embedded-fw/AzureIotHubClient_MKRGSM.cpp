@@ -162,6 +162,11 @@ void IotHubClient::Publish(char* message)
 /* == Private instance methods == */
 
 void IotHubClient::ConnectToCellularNetwork()
+/*
+* Connects the device to the cellular services. 
+* The device will be given a set period of time 
+* before timeout occurs.
+*/
 {
     uint32_t connect_start_ms = millis();
     uint32_t previous_connect_ms;
@@ -197,6 +202,11 @@ void IotHubClient::ConnectToCellularNetwork()
 
 
 void IotHubClient::ConnectToMqttBroker()
+/*
+* Connects the device to the MQTT broker provided. 
+* The device will be given a set period of time 
+* before timeout occurs.
+*/
 {
     char mqtt_topic[128];
     uint32_t connect_start_ms = millis();
