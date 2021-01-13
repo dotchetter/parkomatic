@@ -21,6 +21,8 @@
 
 #define JSON_BUFSIZE                 1024
 #define MQTT_PORT				     8883
+#define SECRET_BROKER                ""
+#define SECRET_DEVICE_ID             ""
 
 /* Intervals and time definitions */
 
