@@ -8,10 +8,6 @@
 
 
 /* Configurations */
-#define SECRET_PINNUMBER             ""
-#define SECRET_GPRS_APN              ""  
-#define SECRET_GPRS_LOGIN            ""    
-#define SECRET_GPRS_PASSWORD         ""   
 #define MQTT_PORT				     8883
 
 /* Intervals and time definitions */
