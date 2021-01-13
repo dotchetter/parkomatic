@@ -27,12 +27,13 @@ void setup()
 
 void printIncomingMessage(int size)
 {
-	Serial.print("Recieved message: ");
+	Serial.print("[DEBUG]: Recieved message: ");
 	
 	while(iothub->Available())
 	{
 		Serial.print((char)iothub->ReadIncoming());
 	}
+	Serial.println();
 }
 
 
