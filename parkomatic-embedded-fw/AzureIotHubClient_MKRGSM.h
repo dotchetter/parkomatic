@@ -40,10 +40,15 @@
 #define MINUTE                       60 * SECOND
 #endif
     
+/* Timeouts and intervals */
+
 #define NONE ""
+#define GSM_RECONNECT_TIMEOUT        1 * MINUTE
+#define GSM_RECONNECT_INTERVAL       5 * SECOND
 #define MQTT_RECONNECT_INTERVAL      5 * SECOND
 #define MQTT_RECONNECT_TIMEOUT       1 * MINUTE
 #define GSM_RECONNECT_INTERVAL       5 * SECOND
+
 
 class IotHubClient
 {
