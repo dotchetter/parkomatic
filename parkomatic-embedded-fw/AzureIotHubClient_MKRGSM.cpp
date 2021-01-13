@@ -26,7 +26,15 @@ GSMClient gsmClient;
 BearSSLClient sslClient(gsmClient);
 MqttClient mqttClient(sslClient);
 
-/* == Public methods == */
+
+/* Helper functions */
+uint32_t GetTimeFromGsm()
+{
+    return gsmHandle.getTime();
+}
+
+
+/* == Public instance methods == */
 
 IotHubClient::IotHubClient(char* hostName,
                            char* deviceId,
@@ -195,11 +203,4 @@ void IotHubClient::ConnectToMqttBroker()
 void IotHubClient::SetIncomingMessageCallback(void(*callback)(int))
 {
     mqttClient.onMessage(callback);
-}
-
-
-/* Helper functions */
-uint32_t GetTimeFromGsm()
-{
-    return gsmHandle.getTime();
 }
