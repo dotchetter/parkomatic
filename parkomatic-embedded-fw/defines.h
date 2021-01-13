@@ -23,6 +23,7 @@
 #define GSM_RECONNECT_INTERVAL       5 * SECOND
 #define MQTT_RECONNECT_INTERVAL      5 * SECOND
 #define MQTT_RECONNECT_TIMEOUT       1 * MINUTE
+#define GSM_RECONNECT_INTERVAL       5 * SECOND
 #define PUBLISH_INTERVAL             10 * SECOND
 
 /* 
@@ -31,6 +32,8 @@ Devmode alters the device behavior in the following aspects:
  - Serial debug messages are ON 
 */
 
-#define DEVMODE                      1
+#define DEVMODE true
+#define RUNONCE false
+#define SENDONCE true
 
 #endif // _DEFINES_H_
