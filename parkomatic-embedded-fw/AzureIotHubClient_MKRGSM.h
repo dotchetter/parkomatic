@@ -26,30 +26,52 @@
 */
 
 
+#define SECRET_PINNUMBER             ""
+#define SECRET_GPRS_APN              ""  
+#define SECRET_GPRS_LOGIN            ""    
+#define SECRET_GPRS_PASSWORD         ""   // TODO - REMOVE this
+
+
+#ifndef SECOND
+#define SECOND                       1000UL
+#endif
+
+#ifndef MINUTE
+#define MINUTE                       60 * SECOND
+#endif
+    
+#define NONE ""
+#define MQTT_RECONNECT_INTERVAL      5 * SECOND
+#define MQTT_RECONNECT_TIMEOUT       1 * MINUTE
+#define GSM_RECONNECT_INTERVAL       5 * SECOND
+
 class IotHubClient
 {
 public:
-    IotHubClient(MqttClient mqttClient, 
-                 char* hostName,
+    IotHubClient(char* hostName,
                  char* deviceId,
-                 int mqttPort = 8883);
-   
+                 int mqttPort=8883);
     ~IotHubClient();
-    int 
+    void Begin();
+    int Available();
+    void Update();
+    const char ReadIncoming();
+    void Publish(char* message);
+    void SetIncomingMessageCallback(void(*callback)(int));
 
-private:
-    // methods
-    unsigned long getTimeFromGsm();
+private: // Methods
+    void ConnectToCellularNetwork();
+    void ConnectToMqttBroker();
 
-private:
-    // properties
+private: // Fields
     char* hostName;
     char* deviceId;
-
-    GPRS gprsHandle;
-    GSM gsmHandle;
-
-    GSMClient gsmClient;
-    BearSSLClient sslClient;
-    MqttClient mqttClient;
+    int mqttPort;
+    char incomingMessageAvailable;
+    uint32_t(*callback_f_ptr)(void);
 };
+
+/* Helper function in global scope */
+uint32_t GetTimeFromGsm();
+
+#endif // _ARDUINOMKR_IOTHUBCLIENT_H
