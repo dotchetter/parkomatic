@@ -1,4 +1,4 @@
-#include "arduinomkr_iothubclient.h"
+#include "AzureIotHubClient_MKRGSM.h"
 
 /*
     Arduino MKR1400 Azure IOT Hub library 
