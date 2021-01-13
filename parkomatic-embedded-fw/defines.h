@@ -12,18 +12,11 @@
 #define SECRET_GPRS_APN              ""  
 #define SECRET_GPRS_LOGIN            ""    
 #define SECRET_GPRS_PASSWORD         ""   
-#define SECRET_BROKER                ""
-#define SECRET_DEVICE_ID             ""
 #define MQTT_PORT				     8883
 
 /* Intervals and time definitions */
 #define SECOND                       1000UL
 #define MINUTE                       60 * SECOND
-
-#define GSM_RECONNECT_INTERVAL       5 * SECOND
-#define MQTT_RECONNECT_INTERVAL      5 * SECOND
-#define MQTT_RECONNECT_TIMEOUT       1 * MINUTE
-#define GSM_RECONNECT_INTERVAL       5 * SECOND
 #define PUBLISH_INTERVAL             10 * SECOND
 
 /* 
