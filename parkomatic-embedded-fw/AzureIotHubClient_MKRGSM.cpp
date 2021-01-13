@@ -43,16 +43,33 @@ IotHubClient::IotHubClient(char* hostName,
     this->hostName = hostName;
     this->deviceId = deviceId;
     this->mqttPort = mqttPort;
+
+    this->gsmPinNumber = NONE;
+    this->gprsApn = NONE;
+    this->gprsLogin = NONE;
+    this->gprsPassword = NONE;
 }
 
 
 IotHubClient::~IotHubClient()
+/*
+* Default destructor. Stops the GSM instance from
+* communicating with the towers, as to sieze any
+* ongoing traffic at the time of deletion.
+*/
 {
     gsmClient.stop();
 }
 
 
 void IotHubClient::Begin()
+/*
+* Starts the instance in attempts to establish
+* connections with the cellular towers as well
+* as connecting to the provided Iot Hub in Azure,
+* with provided hostname and MQTT broker.
+*
+*/
 {
     char mqtt_username[128];
 
@@ -86,24 +103,37 @@ void IotHubClient::Begin()
 
 
 int IotHubClient::Available()
+/*
+* Returns available bytes from the mqtt client object.
+*/
 {
     return mqttClient.available();
 }
 
 
 void IotHubClient::Update()
+/*
+* Updates the MQTT client in both sending and recieving.
+*/
 {
     mqttClient.poll();
 }
 
 
 const char IotHubClient::ReadIncoming()
+/*
+* Reads available bytes from the MQTT client.
+*/
 {
     return mqttClient.read();
 }
 
 
 void IotHubClient::Publish(char* message)
+/*
+* Publishes a message to the provided MQTT broker
+* with the default topic for Microsoft Azure IoT Hub.
+*/
 {
     char mqtt_topic[1024];
 
@@ -149,10 +179,10 @@ void IotHubClient::ConnectToCellularNetwork()
             Serial.print("[DEBUG]: Attempting to connect to cellular services... ");
             previous_connect_ms = millis();
 
-            if ((gsmHandle.begin(SECRET_PINNUMBER) != GSM_READY) ||
-                (gprsHandle.attachGPRS(SECRET_GPRS_APN, 
-                                       SECRET_GPRS_LOGIN,
-                                       SECRET_GPRS_PASSWORD) != GPRS_READY))
+            if ((gsmHandle.begin(this->gsmPinNumber) != GSM_READY) ||
+                (gprsHandle.attachGPRS(this->gprsApn, 
+                                       this->gprsLogin,
+                                       this->gprsPassword) != GPRS_READY))
             {
                 Serial.println("[ERROR]: connection failed. -> Trying again... ");
             }
@@ -210,4 +240,28 @@ void IotHubClient::ConnectToMqttBroker()
 void IotHubClient::SetIncomingMessageCallback(void(*callback)(int))
 {
     mqttClient.onMessage(callback);
+}
+
+
+void IotHubClient::SetGsmPinNumber(char* pinNumber)
+{
+    this->gsmPinNumber = pinNumber;
+}
+
+
+void IotHubClient::SetGprsAPN(char* apn)
+{
+    this->gprsApn = apn;
+}
+
+
+void IotHubClient::SetGprsLogin(char* login)
+{
+    this->gprsLogin = login;
+}
+
+
+void IotHubClient::SetGprsPassword(char* password)
+{
+    this->gprsPassword = password;
 }

@@ -25,11 +25,6 @@
     License: MIT
 */
 
-#define SECRET_PINNUMBER             ""
-#define SECRET_GPRS_APN              ""  
-#define SECRET_GPRS_LOGIN            ""    
-#define SECRET_GPRS_PASSWORD         ""
-
 #ifndef SECOND
 #define SECOND                       1000UL
 #endif
