@@ -25,10 +25,10 @@ void setup()
 }
 
 
-void displayTime()
+void displayTime(char* timeMsg)
 {
 	lcd.setCursor(3,1);
-	lcd.print();
+	lcd.print(timeMsg);
 }
 
 
@@ -63,6 +63,6 @@ void loop()
 		Serial.print(buff);
 	    Serial.println();
 
-	    displayTime();
+	    displayTime(buff);
     }
 }
