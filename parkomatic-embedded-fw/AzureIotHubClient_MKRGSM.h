@@ -55,7 +55,12 @@ public:
     void Update();
     const char ReadIncoming();
     void Publish(char* message);
+
     void SetIncomingMessageCallback(void(*callback)(int));
+    void SetGsmPinNumber(char* pinNumber);
+    void SetGprsAPN(char* apn);
+    void SetGprsLogin(char* login);
+    void SetGprsPassword(char* password);
 
 private: // Methods
     void ConnectToCellularNetwork();
@@ -64,8 +69,12 @@ private: // Methods
 private: // Fields
     char* hostName;
     char* deviceId;
+    char* gsmPinNumber;
+    char* gprsApn;
+    char* gprsLogin;
+    char* gprsPassword;
     int mqttPort;
-    char incomingMessageAvailable;
+    
     uint32_t(*callback_f_ptr)(void);
 };
 
