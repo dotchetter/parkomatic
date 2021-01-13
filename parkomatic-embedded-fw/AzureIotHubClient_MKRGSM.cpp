@@ -76,7 +76,7 @@ void IotHubClient::Begin()
 
     mqttClient.setId(this->deviceId);
     mqttClient.setUsernamePassword(mqtt_username, NONE);
-
+    
     /* Establish connection with cellular services over GPRS or GSM */
     this->ConnectToCellularNetwork();
 
@@ -129,7 +129,7 @@ void IotHubClient::Publish(char* message)
     Serial.println(this->hostName);
 }
 
-/* == Private methods == */
+/* == Private instance methods == */
 
 void IotHubClient::ConnectToCellularNetwork()
 {
@@ -187,7 +187,7 @@ void IotHubClient::ConnectToMqttBroker()
         
         if (millis() - previous_connect_ms > MQTT_RECONNECT_INTERVAL)
         {
-            Serial.println("[DEBUG]: Attempting to connect to the MQTT broker... ");
+            Serial.print("[DEBUG]: Attempting to connect to the MQTT broker... ");
             
             previous_connect_ms = millis();
             
@@ -198,7 +198,7 @@ void IotHubClient::ConnectToMqttBroker()
             }
             else
             {
-                Serial.println("[DEBUG]: Connection to MQTT broker successful.");
+                Serial.println("  success");
                 mqttClient.subscribe(mqtt_topic);
                 break;
             }
