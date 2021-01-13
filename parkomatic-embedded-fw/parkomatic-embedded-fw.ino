@@ -1,8 +1,6 @@
 #include "LiquidCrystal.h"
 #include "defines.h"
-#include "ArduinoLowPower.h"
-#include <TimeLib.h>
-#include <Arduino_MKRGPS.h>
+
 #include <TimeLib.h>
 #include <Arduino_MKRGPS.h>
 
