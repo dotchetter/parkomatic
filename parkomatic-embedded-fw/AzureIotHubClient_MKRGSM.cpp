@@ -125,16 +125,36 @@ void IotHubClient::Publish(char* message)
 
 void IotHubClient::ConnectToCellularNetwork()
 {
-    Serial.print("[DEBUG]: Connecting to GSM... ");
+    uint32_t connect_start_ms = millis();
+    uint32_t previous_connect_ms;
 
-    while ((gsmHandle.begin(SECRET_PINNUMBER) != GSM_READY) ||
-           (gprsHandle.attachGPRS(SECRET_GPRS_APN, SECRET_GPRS_LOGIN,
-                                   SECRET_GPRS_PASSWORD) != GPRS_READY)) 
+    while(1)
     {
-        Serial.print(" connection failed.\n -> Trying again.. ");
-        delay(GSM_RECONNECT_INTERVAL);
+        if (millis() - connect_start_ms > GSM_RECONNECT_TIMEOUT)
+        {
+            Serial.println("[DEBUG]: GSM reached timeout for reconnects, aborting");
+            break;
+        }
+
+        if (millis() - previous_connect_ms > GSM_RECONNECT_INTERVAL)
+        {
+            Serial.print("[DEBUG]: Attempting to connect to cellular services... ");
+            previous_connect_ms = millis();
+
+            if ((gsmHandle.begin(SECRET_PINNUMBER) != GSM_READY) ||
+                (gprsHandle.attachGPRS(SECRET_GPRS_APN, 
+                                       SECRET_GPRS_LOGIN,
+                                       SECRET_GPRS_PASSWORD) != GPRS_READY))
+            {
+                Serial.println("[ERROR]: connection failed. -> Trying again... ");
+            }
+            else
+            {
+                Serial.println("success");
+                break;
+            }
+        }
     }
-    Serial.println("Success");
 }
 
 
