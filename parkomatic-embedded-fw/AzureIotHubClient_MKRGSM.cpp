@@ -168,8 +168,14 @@ void IotHubClient::ConnectToCellularNetwork()
 
 void IotHubClient::ConnectToMqttBroker()
 {
+    char mqtt_topic[128];
     uint32_t connect_start_ms = millis();
     uint32_t previous_connect_ms;
+
+    /* Format string for MQTT topic subscription for incoming messages */
+    sprintf(mqtt_topic,
+            "devices/%s/messages/devicebound/#",
+            this->deviceId);
 
     while (1)
     {
@@ -193,6 +199,7 @@ void IotHubClient::ConnectToMqttBroker()
             else
             {
                 Serial.println("[DEBUG]: Connection to MQTT broker successful.");
+                mqttClient.subscribe(mqtt_topic);
                 break;
             }
         }
