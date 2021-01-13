@@ -1,6 +1,6 @@
 
 #include "defines.h" 
-#include "arduinomkr_iothubclient.h"
+#include "AzureIotHubClient_MKRGSM.h"
 
 char mqtt_username[100];
 
@@ -20,7 +20,6 @@ void setup()
 		Serial.println("[INFO]: Device starting up\n");
 	#endif
 	
-
 	iothub->Begin();
 	iothub->SetIncomingMessageCallback(printIncomingMessage);
 }
