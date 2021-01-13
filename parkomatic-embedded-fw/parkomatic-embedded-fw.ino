@@ -27,4 +27,9 @@ void display_time()
 	lcd.setCursor(3,1);
 	lcd.print("10:30");
 }
+
+void loop() 
+{
+	display_time();
+	while(1){;}
 }
