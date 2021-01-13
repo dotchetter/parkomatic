@@ -12,8 +12,8 @@
 #define SECRET_GPRS_APN              ""  
 #define SECRET_GPRS_LOGIN            ""    
 #define SECRET_GPRS_PASSWORD         ""   
-#define SECRET_BROKER                ""
-#define SECRET_DEVICE_ID             ""
+#define SECRET_BROKER                "parkomatic-iothub.azure-devices.net"
+#define SECRET_DEVICE_ID             "55b076a9-3efc-4593-9975-25f8048fa56e"
 #define MQTT_PORT				     8883
 
 /* Intervals and time definitions */
