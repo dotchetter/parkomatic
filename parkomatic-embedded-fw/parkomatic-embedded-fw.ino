@@ -91,4 +91,8 @@ void loop()
 
 		last_publish = millis();
 	}
+	else
+	{
+		Serial.println("GPS not available.");
+	}
 }
