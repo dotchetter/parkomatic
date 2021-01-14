@@ -1,30 +1,34 @@
-
 #include <avr/dtostrf.h>
-#include "LiquidCrystal.h"
-#include "defines.h"
 #include <Arduino_MKRGPS.h>
+#include <LiquidCrystal.h>
+#include "defines.h" 
+#include "AzureIotHubClient_MKRGSM.h"
 
 LiquidCrystal lcd(LCD_RS_PIN, LCD_ENABLE_PIN, LCD_D4_PIN, LCD_D5_PIN, LCD_D6_PIN, LCD_D7_PIN);
-
-char json_buf[JSON_BUFSIZE];
+IotHubClient iothub(SECRET_BROKER, SECRET_DEVICE_ID);
 
 void setup() 
 {
-	Serial.begin(9600);
+	#if DEVMODE
+	    Serial.begin(2000000);
+		while (!Serial);
+			#if RUNONCE
+				Serial.println("[INFO]: RUNONCE flag activated. This alters the behavior of the device.");
+			#endif	
+		Serial.println("[INFO]: DEVMODE flag activated. This alters the behavior of the device.\n");
+		Serial.println("[INFO]: Parkomatic firmware version: 1.0.1");
+		Serial.println("[INFO]: Cloud service used: Microsoft Azure");
+		Serial.println("[INFO]: Device starting up\n");
+	#endif
+
 	lcd.begin(LCD_COLUMNS, LCD_ROWS);
 	lcd.setCursor(0,0);
 	lcd.print("Parkering start:");
+	
+	GPS.begin(GPS_MODE_SHIELD);
 
-	while (!Serial){}
-
-	Serial.println("Starting GPS");
-	if (!GPS.begin(GPS_MODE_SHIELD)) 
-	{
-		Serial.println("Failed to initialize GPS!");
-		while (1);
-	}
-
-	Serial.println("GPS started successfully");
+	iothub->Begin();
+	iothub->SetIncomingMessageCallback(printIncomingMessage);
 }
 
 
@@ -43,41 +47,57 @@ void formatJsonString(char* buf, size_t size, float lat, float lon, char* device
 }
 
 
-void loop()
+void printIncomingMessage(int size)
 {
-
-	if (GPS.available()) 
+	Serial.print("[DEBUG]: Recieved message: ");
+	
+	while(iothub->Available())
 	{
-
-/*		float latitude   = ;
-	    float longitude  = GPS.longitude();
-	    float altitude   = GPS.altitude();
-	    float speed      = GPS.speed();
-	    int   satellites = GPS.satellites();
-	   
-	    unsigned long timestamp = GPS.getTime();
-
-	    Serial.print("Location: ");
-	    Serial.print(latitude, 7);
-	    Serial.print(", ");
-	    Serial.println(longitude, 7);
-	    Serial.print("Altitude: ");
-	    Serial.print(altitude);
-	    Serial.println("m");
-	    Serial.print("Ground speed: ");
-	    Serial.print(round(speed));
-	    Serial.println(" km/h");
-	    Serial.print("Number of satellites: ");
-	    Serial.println(satellites);
-*/
-
-	    formatJsonString(json_buf,
-	    				 JSON_BUFSIZE,
-	    				 GPS.latitude(),
-	    				 GPS.longitude(),
-	    				 "device-id-mock",
-	    				 GPS.getTime());
-
-	   	Serial.println(json_buf); // Send to iohhub.Publish();
-    }
+		Serial.print((char)iothub->ReadIncoming());
+	}
+	Serial.println();
 }
+
+
+void loop() 
+{
+	static uint32_t last_publish;
+	static uint8_t message_sent = 0;
+	char json_buf[JSON_BUFSIZE];
+
+	iothub->Update();
+
+	#if SENDONCE
+		if (!message_sent)
+		{
+			iothub->Publish("Hello from device");
+			message_sent = 1;		
+		}
+	#endif
+
+	#if RUNONCE
+		Serial.println("\n[INFO]: === Runtime completed. Restart the device if you want another go. === ");
+		while(1){};
+	#endif
+
+	if (GPS.available() && (millis() - last_publish) > PUBLISH_INTERVAL)
+	{
+		formatJsonString(json_buf,
+						 JSON_BUFSIZE,
+						 GPS.latitude(),
+						 GPS.longitude(),
+						 "device-id-mock",
+						 GPS.getTime());
+
+		last_publish = millis();
+	}
+}
+
+
+
+
+
+
+
+
+
