@@ -86,18 +86,9 @@ void loop()
 						 JSON_BUFSIZE,
 						 GPS.latitude(),
 						 GPS.longitude(),
-						 "device-id-mock",
+						 SECRET_DEVICE_ID,
 						 GPS.getTime());
 
 		last_publish = millis();
 	}
 }
-
-
-
-
-
-
-
-
-
