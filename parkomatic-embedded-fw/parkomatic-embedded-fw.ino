@@ -1,8 +1,12 @@
+
+#include <avr/dtostrf.h>
 #include "LiquidCrystal.h"
 #include "defines.h"
 #include <Arduino_MKRGPS.h>
 
 LiquidCrystal lcd(LCD_RS_PIN, LCD_ENABLE_PIN, LCD_D4_PIN, LCD_D5_PIN, LCD_D6_PIN, LCD_D7_PIN);
+
+char json_buf[JSON_BUFSIZE];
 
 void setup() 
 {
@@ -13,32 +17,34 @@ void setup()
 
 	while (!Serial){}
 
+	Serial.println("Starting GPS");
 	if (!GPS.begin(GPS_MODE_SHIELD)) 
 	{
 		Serial.println("Failed to initialize GPS!");
 		while (1);
 	}
+
+	Serial.println("GPS started successfully");
 }
 
 
 void formatJsonString(char* buf, size_t size, float lat, float lon, char* deviceId, uint32_t epoch)
 {
-    /*
-    const char* lat = "59.2282868";
-    const char* lon = "18.4985734";
-    const char* deviceId = "9c758a41-mock-4711-mock-b2113f561f1d";
-    const unsigned long epoch = 1610626385;
-    */
+	char lon_buf[10];
+	char lat_buf[10];
+
+	dtostrf(lon, 7, 7, lon_buf);
+	dtostrf(lat, 7, 7, lat_buf);
+
     snprintf(buf, 
 			 size, 
-			 "{\"lat\": \"%.8f\", \"lon\": \"%.8f\", \"deviceId\": \"%s\", \"epochtime\": %ld}" , 
-             lat, lon, deviceId, epoch);
+			 "{\"lat\": \"%s\", \"lon\": \"%s\", \"deviceId\": \"%s\", \"epochtime\": %ld}" , 
+             lat_buf, lon_buf, deviceId, epoch);
 }
 
 
 void loop()
 {
-	char json_buf[JSON_BUFSIZE];
 
 	if (GPS.available()) 
 	{
