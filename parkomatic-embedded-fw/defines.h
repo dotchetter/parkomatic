@@ -23,6 +23,10 @@
 #define MQTT_PORT				     8883
 
 /* Intervals and time definitions */
+
+#define SECRET_BROKER                ""
+#define SECRET_DEVICE_ID             ""
+
 #define SECOND                       1000UL
 #define MINUTE                       60 * SECOND
 #define PUBLISH_INTERVAL             10 * SECOND
