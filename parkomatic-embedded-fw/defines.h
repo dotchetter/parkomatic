@@ -16,4 +16,4 @@
 #define LCD_COLUMNS                  16
 #define LCD_ROWS                     2
 
-
+#define JSON_BUFSIZE                 1024

@@ -21,11 +21,29 @@ void setup()
 }
 
 
+void formatJsonString(char* buf, size_t size, float lat, float lon, char* deviceId, uint32_t epoch)
+{
+    /*
+    const char* lat = "59.2282868";
+    const char* lon = "18.4985734";
+    const char* deviceId = "9c758a41-mock-4711-mock-b2113f561f1d";
+    const unsigned long epoch = 1610626385;
+    */
+    snprintf(buf, 
+			 size, 
+			 "{\"lat\": \"%.8f\", \"lon\": \"%.8f\", \"deviceId\": \"%s\", \"epochtime\": %ld}" , 
+             lat, lon, deviceId, epoch);
+}
+
+
 void loop()
 {
+	char json_buf[JSON_BUFSIZE];
+
 	if (GPS.available()) 
 	{
-		float latitude   = GPS.latitude();
+
+/*		float latitude   = ;
 	    float longitude  = GPS.longitude();
 	    float altitude   = GPS.altitude();
 	    float speed      = GPS.speed();
@@ -45,5 +63,15 @@ void loop()
 	    Serial.println(" km/h");
 	    Serial.print("Number of satellites: ");
 	    Serial.println(satellites);
+*/
+
+	    formatJsonString(json_buf,
+	    				 JSON_BUFSIZE,
+	    				 GPS.latitude(),
+	    				 GPS.longitude(),
+	    				 "device-id-mock",
+	    				 GPS.getTime());
+
+	   	Serial.println(json_buf); // Send to iohhub.Publish();
     }
 }
