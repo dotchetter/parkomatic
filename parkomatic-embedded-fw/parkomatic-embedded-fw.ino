@@ -2,8 +2,6 @@
 #include "defines.h" 
 #include "AzureIotHubClient_MKRGSM.h"
 
-char mqtt_username[100];
-
 IotHubClient* iothub = new IotHubClient(SECRET_BROKER, SECRET_DEVICE_ID);
 
 void setup() 
