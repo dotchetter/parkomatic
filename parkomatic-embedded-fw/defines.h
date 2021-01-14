@@ -39,6 +39,6 @@ Devmode alters the device behavior in the following aspects:
 
 #define DEVMODE true
 #define RUNONCE false
-#define SENDONCE true
+#define SENDONCE false
 
 #endif // _DEFINES_H_
