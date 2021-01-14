@@ -21,14 +21,14 @@ void setup()
 		Serial.println("[INFO]: Device starting up\n");
 	#endif
 
-	lcd.begin(LCD_COLUMNS, LCD_ROWS);
+	//lcd.begin(LCD_COLUMNS, LCD_ROWS);
 	lcd.setCursor(0,0);
 	lcd.print("Parkering start:");
 	
 	GPS.begin(GPS_MODE_SHIELD);
 
-	iothub->Begin();
-	iothub->SetIncomingMessageCallback(printIncomingMessage);
+	iothub.Begin();
+	iothub.SetIncomingMessageCallback(printIncomingMessage);
 }
 
 
@@ -51,9 +51,9 @@ void printIncomingMessage(int size)
 {
 	Serial.print("[DEBUG]: Recieved message: ");
 	
-	while(iothub->Available())
+	while(iothub.Available())
 	{
-		Serial.print((char)iothub->ReadIncoming());
+		Serial.print((char)iothub.ReadIncoming());
 	}
 	Serial.println();
 }
@@ -65,12 +65,12 @@ void loop()
 	static uint8_t message_sent = 0;
 	char json_buf[JSON_BUFSIZE];
 
-	iothub->Update();
+	iothub.Update();
 
 	#if SENDONCE
 		if (!message_sent)
 		{
-			iothub->Publish("Hello from device");
+			iothub.Publish("Hello from device");
 			message_sent = 1;		
 		}
 	#endif
