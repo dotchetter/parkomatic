@@ -29,7 +29,7 @@
 
 #define SECOND                       1000UL
 #define MINUTE                       60 * SECOND
-#define PUBLISH_INTERVAL             10 * SECOND
+#define PUBLISH_INTERVAL             30 * SECOND
 
 /* 
 Devmode alters the device behavior in the following aspects:
