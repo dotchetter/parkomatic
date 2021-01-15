@@ -1,4 +1,3 @@
-#include <TimeLib.h>
 #include <Arduino_MKRGPS.h>
 
 void setup() 
@@ -8,7 +7,6 @@ void setup()
 
 	if (!GPS.begin(GPS_MODE_SHIELD)) 
 	{
-
 		Serial.println("Failed to initialize GPS!");
 		while (1);
 	}
@@ -16,21 +14,16 @@ void setup()
 
 void loop()
 {
-	if (GPS.available()) 
-	{
-		
-		float latitude   = GPS.latitude();
+    if (GPS.available())
+    {
 	    float longitude  = GPS.longitude();
 	    float altitude   = GPS.altitude();
 	    float speed      = GPS.speed();
 	    int   satellites = GPS.satellites();
+		float latitude   = GPS.latitude();
 	   
 	    unsigned long timestamp = GPS.getTime();
-		char buff[10];
-	    
-		sprintf(buff, "%02d:%02d", hour(timestamp), minute(timestamp));
-	   
-	    // print GPS values
+
 	    Serial.print("Location: ");
 	    Serial.print(latitude, 7);
 	    Serial.print(", ");
@@ -44,7 +37,7 @@ void loop()
 	    Serial.print("Number of satellites: ");
 	    Serial.println(satellites);
 	    Serial.print("The time: ");
-		Serial.print(buff);
+		Serial.print(timestamp);
 	    Serial.println();
     }
 }
