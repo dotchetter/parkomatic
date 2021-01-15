@@ -21,14 +21,14 @@ void setup()
 		Serial.println("[INFO]: Device starting up\n");
 	#endif
 
-	//lcd.begin(LCD_COLUMNS, LCD_ROWS);
-	lcd.setCursor(0,0);
-	lcd.print("Parkering start:");
-	
 	GPS.begin(GPS_MODE_SHIELD);
-
+	
 	iothub.Begin();
 	iothub.SetIncomingMessageCallback(printIncomingMessage);
+	
+	lcd.begin(LCD_COLUMNS, LCD_ROWS);
+	lcd.setCursor(0,0);
+	lcd.print("Parkering start:");	
 }
 
 
@@ -49,13 +49,22 @@ void formatJsonString(char* buf, size_t size, float lat, float lon, char* device
 
 void printIncomingMessage(int size)
 {
+
+	char timestamp_buf[6];
+	uint8_t count = 0;
 	Serial.print("[DEBUG]: Recieved message: ");
 	
 	while(iothub.Available())
 	{
-		Serial.print((char)iothub.ReadIncoming());
+		timestamp_buf[count] = (char)iothub.ReadIncoming();
+		count++;
 	}
-	Serial.println();
+
+	timestamp_buf[count] = '\0';
+
+	Serial.println(timestamp_buf);
+	lcd.setCursor(5,1);
+	lcd.print(timestamp_buf);
 }
 
 
@@ -80,7 +89,7 @@ void loop()
 		while(1){};
 	#endif
 
-	if (GPS.available() && (millis() - last_publish) > PUBLISH_INTERVAL)
+	if (GPS.available())
 	{
 		formatJsonString(json_buf,
 						 JSON_BUFSIZE,
@@ -89,10 +98,11 @@ void loop()
 						 SECRET_DEVICE_ID,
 						 GPS.getTime());
 
+		iothub.Publish(json_buf);
 		last_publish = millis();
 	}
 	else
 	{
-		Serial.println("GPS not available.");
+		Serial.println("GPS not available");
 	}
 }

@@ -79,6 +79,7 @@ void IotHubClient::Begin()
     ECCX08SelfSignedCert.endReconstruction();
     ArduinoBearSSL.onGetTime(GetTimeFromGsm);
 
+    
     /* Set the public key to be used with the certificate 
        in the ECCX08 slot */
     sslClient.setEccSlot(NULL,
