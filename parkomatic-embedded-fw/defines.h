@@ -32,14 +32,14 @@
 #define PUBLISH_INTERVAL             30 * SECOND
 #define GPS_SEEK_CYCLES              F_CPU / 1000000
 
-/* 
-Devmode alters the device behavior in the following aspects:
- - Runtime is blocking until UART is initiated on the terminal side
- - Serial debug messages are ON 
-*/
+/* Development flags */
 
 #define DEVMODE true
 #define RUNONCE false
 #define SENDONCE false
+
+/* Macros */
+
+#define TIME_PASSED(ref, ts) (millis() - ts > ref)
 
 #endif // _DEFINES_H_
