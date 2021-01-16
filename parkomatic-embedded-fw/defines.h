@@ -30,7 +30,8 @@
 #define SECOND                       1000UL
 #define MINUTE                       60 * SECOND
 #define PUBLISH_INTERVAL             30 * SECOND
-#define GPS_SEEK_CYCLES              F_CPU / 1000000
+
+#define GPS_SEARCH_TIMEOUT           5 * MINUTE
 
 /* Development flags */
 

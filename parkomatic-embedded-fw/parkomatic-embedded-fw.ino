@@ -12,8 +12,8 @@ void setup()
 	#if DEVMODE
 	    Serial.begin(2000000);
 		while (!Serial);
-			#if RUNONCE
-				Serial.println("[INFO]: RUNONCE flag activated. This alters the behavior of the device.");
+			#if SENDONCE
+				Serial.println("[INFO]: SENDONCE flag activated. This alters the behavior of the device.");
 			#endif	
 		Serial.println("[INFO]: DEVMODE flag activated. This alters the behavior of the device.\n");
 		Serial.println("[INFO]: Parkomatic firmware version: 1.0.1");
@@ -69,35 +69,49 @@ void printIncomingMessage(int size)
 void loop() 
 {
 	static uint32_t last_publish;
-	static uint8_t message_sent = 0;
 	char json_buf[JSON_BUFSIZE];
+	
+	uint32_t gps_search_start;
 
-	for (uint32_t i = 0; i < GPS_SEEK_CYCLES; i++)
-	{
-		if (GPS.available()) 
-		{
-			formatJsonString(json_buf, JSON_BUFSIZE, 
-							 GPS.latitude(), GPS.longitude(),
-							 SECRET_DEVICE_ID, GPS.getTime());
-			break;
-		}
-	}
+	gps_search_start = millis();	
 
 	if (TIME_PASSED(PUBLISH_INTERVAL, last_publish))
 	{
-		last_publish = millis();
-	
-		#if SENDONCE
-			if (!message_sent)
+		#if DEVMODE
+			Serial.print("\n[DEBUG]: Attempting GPS lock on... ");
+		#endif
+		while (!TIME_PASSED(GPS_SEARCH_TIMEOUT, gps_search_start))
+		{
+			if (GPS.available()) 
 			{
-				Serial.println("\n[INFO]: === Sent one message, only polling incoming from now on === ");
-				iothub.Publish(json_buf);
-				message_sent = 1;		
+				float lon = GPS.longitude();
+				float lat = GPS.latitude();
+				unsigned long t = GPS.getTime();
+
+				formatJsonString(json_buf, JSON_BUFSIZE, 
+								 lat, lon,
+								 SECRET_DEVICE_ID, t);
+				#if DEVMODE
+					Serial.println("success"); 
+					Serial.print("[INFO]: Location: ");
+					Serial.print(lon, 7);
+
+					Serial.print(", ");
+					Serial.println(lat, 7);
+
+					Serial.print("[INFO]: Constructed message: ");
+					Serial.println(json_buf);
+				#endif
+				break;
 			}
-		#else
-			iothub.Publish(json_buf);
+		}
+		last_publish = millis();
+		iothub.Publish(json_buf);
+
+		#if SENDONCE
+			Serial.println("SENDONCE flag active - stalling indefinitely");
+			for(;;);
 		#endif
 	}
-
 	iothub.Update();
 }
