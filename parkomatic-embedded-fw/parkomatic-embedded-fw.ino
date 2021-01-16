@@ -72,20 +72,6 @@ void loop()
 	static uint8_t message_sent = 0;
 	char json_buf[JSON_BUFSIZE];
 
-
-	#if SENDONCE
-		if (!message_sent)
-		{
-			iothub.Publish("Hello from device");
-			message_sent = 1;		
-		}
-	#endif
-
-	#if RUNONCE
-		Serial.println("\n[INFO]: === Runtime completed. === ");
-		while(1){};
-	#endif
-
 	for (uint32_t i = 0; i < GPS_SEEK_CYCLES; i++)
 	{
 		if (GPS.available()) 
@@ -99,9 +85,19 @@ void loop()
 
 	if (TIME_PASSED(PUBLISH_INTERVAL, last_publish))
 	{
-		iothub.Publish(json_buf);
 		last_publish = millis();
-	}
 	
+		#if SENDONCE
+			if (!message_sent)
+			{
+				Serial.println("\n[INFO]: === Sent one message, only polling incoming from now on === ");
+				iothub.Publish(json_buf);
+				message_sent = 1;		
+			}
+		#else
+			iothub.Publish(json_buf);
+		#endif
+	}
+
 	iothub.Update();
 }
