@@ -30,6 +30,7 @@
 #define SECOND                       1000UL
 #define MINUTE                       60 * SECOND
 #define PUBLISH_INTERVAL             30 * SECOND
+#define GPS_SEEK_CYCLES              F_CPU / 1000000
 
 /* 
 Devmode alters the device behavior in the following aspects:

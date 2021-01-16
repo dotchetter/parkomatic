@@ -89,20 +89,22 @@ void loop()
 		while(1){};
 	#endif
 
-	if (GPS.available())
+	for (uint32_t i = 0; i < GPS_SEEK_CYCLES; i++)
 	{
-		formatJsonString(json_buf,
-						 JSON_BUFSIZE,
-						 GPS.latitude(),
-						 GPS.longitude(),
-						 SECRET_DEVICE_ID,
-						 GPS.getTime());
+		if (GPS.available()) 
+		{
+			formatJsonString(json_buf, JSON_BUFSIZE, 
+							 GPS.latitude(), GPS.longitude(),
+							 SECRET_DEVICE_ID, GPS.getTime());
+			break;
+		}
+	}
 
+	if (TIME_PASSED(PUBLISH_INTERVAL, last_publish))
+	{
 		iothub.Publish(json_buf);
 		last_publish = millis();
 	}
-	else
-	{
-		Serial.println("GPS not available");
-	}
+	
+	iothub.Update();
 }
