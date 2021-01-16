@@ -40,8 +40,7 @@ void formatJsonString(char* buf, size_t size, float lat, float lon, char* device
 	dtostrf(lon, 7, 7, lon_buf);
 	dtostrf(lat, 7, 7, lat_buf);
 
-    snprintf(buf, 
-			 size, 
+    snprintf(buf, size, 
 			 "{\"lat\": \"%s\", \"lon\": \"%s\", \"deviceId\": \"%s\", \"epochtime\": %ld}" , 
              lat_buf, lon_buf, deviceId, epoch);
 }
@@ -49,7 +48,6 @@ void formatJsonString(char* buf, size_t size, float lat, float lon, char* device
 
 void printIncomingMessage(int size)
 {
-
 	char timestamp_buf[6];
 	uint8_t count = 0;
 	Serial.print("[DEBUG]: Recieved message: ");
@@ -74,7 +72,6 @@ void loop()
 	static uint8_t message_sent = 0;
 	char json_buf[JSON_BUFSIZE];
 
-	iothub.Update();
 
 	#if SENDONCE
 		if (!message_sent)
@@ -85,7 +82,7 @@ void loop()
 	#endif
 
 	#if RUNONCE
-		Serial.println("\n[INFO]: === Runtime completed. Restart the device if you want another go. === ");
+		Serial.println("\n[INFO]: === Runtime completed. === ");
 		while(1){};
 	#endif
 
