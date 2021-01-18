@@ -35,8 +35,8 @@
 
 /* Development flags */
 
-#define DEVMODE true
-#define SENDONCE true
+#define DEVMODE false
+#define SENDONCE false
 
 /* Macros */
 

@@ -1,6 +1,7 @@
 #include <avr/dtostrf.h>
 #include <Arduino_MKRGPS.h>
 #include <LiquidCrystal.h>
+#include <ArduinoLowPower.h>
 #include "defines.h" 
 #include "AzureIotHubClient_MKRGSM.h"
 
@@ -75,43 +76,45 @@ void loop()
 
 	gps_search_start = millis();	
 
-	if (TIME_PASSED(PUBLISH_INTERVAL, last_publish))
+	#if DEVMODE
+		Serial.print("\n[DEBUG]: Attempting GPS lock on... ");
+	#endif
+
+	while (!TIME_PASSED(GPS_SEARCH_TIMEOUT, gps_search_start))
 	{
-		#if DEVMODE
-			Serial.print("\n[DEBUG]: Attempting GPS lock on... ");
-		#endif
-		while (!TIME_PASSED(GPS_SEARCH_TIMEOUT, gps_search_start))
+		if (GPS.available()) 
 		{
-			if (GPS.available()) 
-			{
-				float lon = GPS.longitude();
-				float lat = GPS.latitude();
-				unsigned long t = GPS.getTime();
+			float lon = GPS.longitude();
+			float lat = GPS.latitude();
+			unsigned long t = GPS.getTime();
 
-				formatJsonString(json_buf, JSON_BUFSIZE, 
-								 lat, lon,
-								 SECRET_DEVICE_ID, t);
-				#if DEVMODE
-					Serial.println("success"); 
-					Serial.print("[INFO]: Location: ");
-					Serial.print(lon, 7);
+			formatJsonString(json_buf, JSON_BUFSIZE, 
+							 lat, lon,
+							 SECRET_DEVICE_ID, t);
+			#if DEVMODE
+				Serial.println("success"); 
+				Serial.print("[INFO]: Location: ");
+				Serial.print(lon, 7);
 
-					Serial.print(", ");
-					Serial.println(lat, 7);
+				Serial.print(", ");
+				Serial.println(lat, 7);
 
-					Serial.print("[INFO]: Constructed message: ");
-					Serial.println(json_buf);
-				#endif
-				break;
-			}
+				Serial.print("[INFO]: Constructed message: ");
+				Serial.println(json_buf);
+			#endif
+			break;
 		}
-		last_publish = millis();
-		iothub.Publish(json_buf);
-
-		#if SENDONCE
-			Serial.println("SENDONCE flag active - stalling indefinitely");
-			for(;;);
-		#endif
 	}
+
+	last_publish = millis();
+	iothub.Publish(json_buf);
+
+	LowPower.deepSleep(PUBLISH_INTERVAL);
+
+	#if SENDONCE
+		Serial.println("SENDONCE flag active - stalling indefinitely");
+		for(;;);
+	#endif
+
 	iothub.Update();
 }
