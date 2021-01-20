@@ -48,6 +48,9 @@ void formatJsonString(char* buf, size_t size, float lat, float lon, char* device
 
 void printIncomingMessage(int size)
 {
+	lcd.setCursor(0,1);
+	lcd.print("                ");
+
 	char timestamp_buf[6];
 	uint8_t count = 0;
 	Serial.print("[DEBUG]: Recieved message: ");
