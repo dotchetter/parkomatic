@@ -83,8 +83,15 @@ void loop()
 		#if DEVMODE
 			Serial.print("\n[DEBUG]: Attempting GPS lock on... ");
 		#endif
-		while (!TIME_PASSED(GPS_SEARCH_TIMEOUT, gps_search_start))
+
+		while (1)
 		{
+			if (TIME_PASSED(GPS_SEARCH_TIMEOUT, gps_search_start))
+			{
+				Serial.println("timeout");
+				break;
+			}
+
 			if (GPS.available()) 
 			{
 				float lon = GPS.longitude();
@@ -105,16 +112,19 @@ void loop()
 					Serial.print("[INFO]: Constructed message: ");
 					Serial.println(json_buf);
 				#endif
+				
+				
+				last_publish = millis();
+				iothub.Publish(json_buf);
 				break;
 			}
-		}
-		last_publish = millis();
-		iothub.Publish(json_buf);
+		}	
 
+	}
 		#if SENDONCE
 			Serial.println("SENDONCE flag active - stalling indefinitely");
 			for(;;);
 		#endif
-	}
+
 	iothub.Update();
 }

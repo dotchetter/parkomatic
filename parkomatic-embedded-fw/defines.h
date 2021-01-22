@@ -31,7 +31,7 @@
 #define MINUTE                       60 * SECOND
 #define PUBLISH_INTERVAL             30 * SECOND
 
-#define GPS_SEARCH_TIMEOUT           5 * MINUTE
+#define GPS_SEARCH_TIMEOUT           1 * MINUTE
 
 /* Development flags */
 
