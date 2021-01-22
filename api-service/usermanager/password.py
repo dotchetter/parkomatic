@@ -58,12 +58,8 @@ class Password:
     def salt(self) -> bytes:
         return self._salt if self._salt else None
 
-    @property
-    def created_at(self) -> datetime:
-        return self._created_at
-
     def __hash_password(self, plaintext_password: str) -> None:
-        self._salt = secrets.token_bytes(16)
+        self._salt = secrets.token_bytes(32)
         dk = hashlib.pbkdf2_hmac("sha3-512",
                                  plaintext_password.encode("utf-8"),
                                  self._salt,
