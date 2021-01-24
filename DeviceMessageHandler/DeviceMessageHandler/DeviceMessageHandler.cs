@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using System;
 using Microsoft.Azure.Devices;
 using System.Threading.Tasks;
+using System.Data.SqlClient;
 
 namespace DeviceMessageHandler
 {
@@ -21,7 +22,6 @@ namespace DeviceMessageHandler
         public string deviceId { get; set; }
 
     }
-    // "{\"lat\": \"%s\", \"lon\": \"%s\", \"deviceId\": \"%s\", \"epochtime\": %ld}"
     public static class DeviceMessageHandler
     {
         private static HttpClient client = new HttpClient();
@@ -35,12 +35,34 @@ namespace DeviceMessageHandler
             DeviceMessage deviceMessage = JsonConvert.DeserializeObject<DeviceMessage>(Encoding.UTF8.GetString(message.Body.Array));
             serviceClient = ServiceClient.CreateFromConnectionString(connectionString);
             SendCloudToDeviceMessageAsync(deviceMessage.deviceId).Wait();
+            AddToDatabase(deviceMessage);
         }
 
         private async static Task SendCloudToDeviceMessageAsync(string deviceId)
         {
             var commandMessage = new Message(Encoding.ASCII.GetBytes(DateTime.Now.ToString("HH:mm")));
             await serviceClient.SendAsync(deviceId, commandMessage);
+        }
+
+        private static void AddToDatabase(DeviceMessage deviceMessage)
+        {
+            using (var conn = new SqlConnection(Environment.GetEnvironmentVariable("DatabaseConnectionString")))
+            {
+
+                conn.Open();
+
+                using (var cmd = new SqlCommand("saveData", conn))
+                {
+                   
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@lat", deviceMessage.lat); 
+                    cmd.Parameters.AddWithValue("@lon", deviceMessage.lon); 
+                    cmd.Parameters.AddWithValue("@device_id", deviceMessage.deviceId);
+                    cmd.Parameters.AddWithValue("@epochtime", deviceMessage.epochtime);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
         }
     }
 }
