@@ -13,8 +13,8 @@ class User:
     setter method.
     """
 
-    def __init__(self, username: str, email: str, firstname: str,
-                 lastname: str):
+    def __init__(self, username: str, email: str,
+                 firstname: str, lastname: str):
         self._username: str = username
         self._email: str = email
         self._firstname: str = firstname
