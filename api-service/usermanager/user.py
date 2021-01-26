@@ -55,4 +55,6 @@ class User:
 
     @password.setter
     def password(self, password: Password) -> None:
+        if not isinstance(password, Password):
+            raise AttributeError("password must be of type <Password>")
         self._password = password
