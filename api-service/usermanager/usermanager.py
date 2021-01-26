@@ -1,5 +1,6 @@
 from usermanager.user import User
 from usermanager.password import Password
+from sqlclient.sqlcommand import SqlCommand
 
 
 class UserManager:
@@ -19,7 +20,7 @@ class UserManager:
     """
 
     def __init__(self):
-        self._username_user_map: dict[str: str] = {}
+        self._sql_commands: dict[str: SqlCommand] = {}
 
     def __repr__(self):
         pass
@@ -58,7 +59,9 @@ class UserManager:
 
         new_user = User(username, email, firstname, lastname)
         new_user.password = Password(password_plaintext)
+
         # TODO: Insert user to database
+        self._sql_client.execute(self._sql_commands["add_user"](new_user))
         return True
 
     def delete_user(self, username: str) -> bool:
