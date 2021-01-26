@@ -15,10 +15,10 @@ class User:
 
     # noinspection PyTypeChecker
     def __init__(self, username: str, email: str):
-        self._username: str = username
-        self._email: str = email
-        self._password: Password = None
-        self._user_id = str(uuid.uuid4())
+        self.username: str = username
+        self.email: str = email
+        self.password: Password = None
+        self.user_id = str(uuid.uuid4())
 
     def __repr__(self) -> str:
         return f"User(size: {self.__sizeof__()}b, user_id: {self._user_id})"
