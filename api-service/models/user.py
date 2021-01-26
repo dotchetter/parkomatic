@@ -1,5 +1,5 @@
 import uuid
-from usermanager.password import Password
+from password import Password
 
 
 class User:
@@ -14,21 +14,17 @@ class User:
     """
 
     # noinspection PyTypeChecker
-    def __init__(self, username: str, email: str,
-                 firstname: str, lastname: str):
+    def __init__(self, username: str, email: str):
         self._username: str = username
         self._email: str = email
-        self._firstname: str = firstname
-        self._lastname: str = lastname
         self._password: Password = None
-        self._uuid = str(uuid.uuid4())
+        self._user_id = str(uuid.uuid4())
 
     def __repr__(self) -> str:
-        return f"User(size: {self.__sizeof__()}b, uuid: {self._uuid})"
+        return f"User(size: {self.__sizeof__()}b, user_id: {self._user_id})"
 
     def __str__(self) -> str:
-        return f"username: {self._username}, email: {self._email}, " \
-               f"firstname: {self._firstname}, lastname: {self._lastname}"
+        return f"username: {self._username}, email: {self._email}"
 
     @property
     def username(self) -> str:
@@ -39,23 +35,22 @@ class User:
         return self._email
 
     @property
-    def firstname(self) -> str:
-        return self._firstname
-
-    @property
-    def lastname(self) -> str:
-        return self._lastname
-
-    @property
     def password(self) -> Password:
         return self._password
 
     @property
-    def uuid(self) -> str:
-        return self._uuid
+    def user_id(self) -> str:
+        return self._user_id
 
     @password.setter
     def password(self, password: Password) -> None:
         if not isinstance(password, Password):
             raise AttributeError("password must be of type <Password>")
         self._password = password
+
+
+if __name__ == "__main__":
+    user = User("dotchetter", "dotchetter@protonmail.ch")
+    user.password = Password("password123")
+
+    print(user.__dict__)
