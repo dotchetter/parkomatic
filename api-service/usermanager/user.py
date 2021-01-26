@@ -13,6 +13,7 @@ class User:
     setter method.
     """
 
+    # noinspection PyTypeChecker
     def __init__(self, username: str, email: str,
                  firstname: str, lastname: str):
         self._username: str = username
