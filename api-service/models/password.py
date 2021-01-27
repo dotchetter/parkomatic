@@ -17,8 +17,8 @@ class Password:
     HASH_NUM_ITER = 1000000
 
     def __init__(self, plaintext_password: str = None):
-        self._hashed_password: str
-        self._salt: bytes
+        self._hashed_password: str = str()
+        self._salt: bytes = bytes()
         self._created_at: datetime = datetime.now()
 
         if plaintext_password:
