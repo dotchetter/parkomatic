@@ -1,5 +1,5 @@
 import uuid
-from password import Password
+from models.password import Password
 from models.sqlserializable import SqlSerializable
 
 
