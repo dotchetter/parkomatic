@@ -25,10 +25,6 @@ class Password:
             self.__hash_password(plaintext_password)
 
     def __repr__(self):
-        return f"Password(created: {self._created_at}, hash: {self._hashed_password}, " \
-               f"salt: {self._salt})"
-
-    def __str__(self):
         return self._hashed_password
 
     def __eq__(self, compare: str):
