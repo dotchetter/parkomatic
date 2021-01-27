@@ -1,87 +1,25 @@
-from usermanager.user import User
-from usermanager.password import Password
-from sqlclient.sqlcommand import SqlCommand
+from models.sqlcommand import SqlCommand
+from models.password import Password
+from models.user import User
 
 
-class UserManager:
-    """
-    The UserManager class is an encapsualted
-    manager object to provide the user with
-    a one-stop object for the creation,
-    read, update and deletion of user accounts.
+if __name__ == "__main__":
 
-    The UserManager class communicates with the
-    database through the provided SqlCommands
-    that are provided from the user.
+    user = User()
+    user.username = "dotchetter"
+    user.email = "dotchetter@protonmail.ch"
+    user.password = Password("password123")
 
-    Users can be deserialized from an SQL database after
-    instantiation and can be modified as the
-    'User' object allows.
-    """
+    user.sql_serialize()
 
-    def __init__(self):
-        self._sql_commands: dict[str: SqlCommand] = {}
+    get_device_id = SqlCommand()
+    get_device_id.select = "id"
+    get_device_id.select_from = "devices"
+    get_device_id.where = {"device_id": "device_id_here"}
 
-    def __repr__(self):
-        pass
+    insert_message = SqlCommand()
+    insert_message.insert_into = "users"
+    insert_message.columns = user.columns
+    insert_message.values = user.values
 
-    def __str__(self):
-        pass
-
-    def __iadd__(self, other: User):
-        pass
-
-    def new_user(self, username: str, email: str,
-                 firstname: str, lastname: str,
-                 password_plaintext: str) -> bool:
-        """
-        Creates a new user, if the username is vacant
-        and complies with the limitations set.
-
-        :param username:
-            Username for the user
-        :param email:
-            Email for the user
-        :param firstname:
-            Firstname of the user
-        :param lastname:
-            Lastname of the user
-        :param password_plaintext:
-            Plain text password for the user
-        :returns:
-            bool, if user was created successfully
-        :raises:
-            UsernameIsTakenException: username already exists in the
-            database
-        """
-        if not self._username_available(username):
-            return False
-
-        new_user = User(username, email, firstname, lastname)
-        new_user.password = Password(password_plaintext)
-
-        # TODO: Insert user to database
-        self._sql_client.execute(self._sql_commands["add_user"](new_user))
-        return True
-
-    def delete_user(self, username: str) -> bool:
-        """
-        Deletes a user if available.
-        :param username: username of user to delete, str
-        :returns: bool, successful removal
-        """
-        try:
-            pass
-            # TODO: Delete user from database
-        except KeyError:
-            return False
-        return True
-
-    def _username_available(self, username: str) -> bool:
-        """
-        Checks whether a given username is available
-        for claim.
-        :param username: username to check, str
-        :returns: bool, available or not
-        """
-        return not bool(self._username_user_map.get(username))
+    print(insert_message)
