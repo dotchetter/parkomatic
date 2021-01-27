@@ -1,8 +1,9 @@
 import uuid
 from password import Password
+from models.sqlserializable import SqlSerializable
 
 
-class User:
+class User(SqlSerializable):
     """
     This model represents a user, plain and
     simple.
@@ -14,10 +15,11 @@ class User:
     """
 
     # noinspection PyTypeChecker
-    def __init__(self, username: str, email: str):
+    def __init__(self, username: str = str(), email: str = str()):
+        super().__init__()
         self.username: str = username
         self.email: str = email
-        self.password: Password = None
+        self.password: Password = Password()
         self.user_id = str(uuid.uuid4())
 
     def __repr__(self) -> str:
@@ -30,27 +32,38 @@ class User:
     def username(self) -> str:
         return self._username
 
+    @username.setter
+    def username(self, value: str):
+        self._username = value
+        self.sql_properties["username"] = self._username
+
     @property
     def email(self) -> str:
         return self._email
+
+    @email.setter
+    def email(self, value: str):
+        self._email = value
+        self.sql_properties["email"] = self._email
 
     @property
     def password(self) -> Password:
         return self._password
 
-    @property
-    def user_id(self) -> str:
-        return self._user_id
-
     @password.setter
     def password(self, password: Password) -> None:
         if not isinstance(password, Password):
             raise AttributeError("password must be of type <Password>")
+
         self._password = password
+        self.sql_properties["password"] = self._password
+        self.sql_properties["salt"] = self._password.salt
 
+    @property
+    def user_id(self) -> str:
+        return self._user_id
 
-if __name__ == "__main__":
-    user = User("dotchetter", "dotchetter@protonmail.ch")
-    user.password = Password("password123")
-
-    print(user.__dict__)
+    @user_id.setter
+    def user_id(self, value: str):
+        self._user_id = value
+        self.sql_properties["user_id"] = self._user_id
