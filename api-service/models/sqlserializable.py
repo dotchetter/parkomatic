@@ -21,20 +21,9 @@ class SqlSerializable:
         self._columns: tuple = tuple()
         self._values: tuple = tuple()
 
-    def sql_serialize(self) -> None:
-        """
-        Updates the 'columns' and 'values' properties
-        on self, for to more easily insert these
-        parameters in Sql queries.
-
-        :returns: None
-        """
-        self._columns = tuple(self.sql_properties.keys())
-        self._values = tuple(self.sql_properties.values())
-
     @property
-    def columns(self) -> tuple:
-        return self._columns
+    def columns(self) -> str:
+        return f"({str(', ').join(self.sql_properties.keys())})"
 
     @columns.setter
     def columns(self, value: tuple):
@@ -42,7 +31,7 @@ class SqlSerializable:
 
     @property
     def values(self) -> tuple:
-        return self._values
+        return tuple(self.sql_properties.values())
 
     @values.setter
     def values(self, value: tuple):
