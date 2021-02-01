@@ -56,6 +56,14 @@ class SqlCommand:
         """
         return self.format_as_sql()
 
+    def __str__(self):
+        """
+        Represents itself in pure SQL, concatenating
+        all the parameters and configs set in the
+        instance
+        """
+        return self.format_as_sql()
+
     def format_as_sql(self):
         output: list = []
 
@@ -66,7 +74,8 @@ class SqlCommand:
                     "Column(s) missing for FROM statement: 'select_from'")
 
             if self.top:
-                output.append(f"({self.top}")
+                output.append(f"{self.select} ({self.top}) {', '.join(self.columns)} "
+                              f"FROM {self.select_from}")
             else:
                 output.append(f"{self.select} FROM {self.select_from}")
 
@@ -98,7 +107,7 @@ class SqlCommand:
 
         elif self.insert_into:
             if not self.columns:
-                raise AttributeError ("Columns missing for the INSERT statement")
+                raise AttributeError("Columns missing for the INSERT statement")
             output.append(f"INSERT INTO {self.insert_into} {self.columns} VALUES {self.values}")
 
         return " ".join(output)
