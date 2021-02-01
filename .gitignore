@@ -299,3 +299,4 @@ __pycache__/
 
 # Django files
 api-service/parkomaticapps/db.sqlite3
+venv
