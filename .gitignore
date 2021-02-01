@@ -296,3 +296,6 @@ paket-files/
 __pycache__/
 *.pyc
 *.env*
+
+# Django files
+api-service/parkomaticapps/db.sqlite3
