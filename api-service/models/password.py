@@ -51,8 +51,8 @@ class Password:
         return self._hashed_password if self._hashed_password else None
 
     @property
-    def salt(self) -> bytes:
-        return self._salt if self._salt else None
+    def salt(self) -> str:
+        return self._salt.hex() if self._salt else bytes().hex()
 
     def __hash_password(self, plaintext_password: str) -> None:
         self._salt = secrets.token_bytes(32)
