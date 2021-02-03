@@ -28,7 +28,8 @@ class SqlCommand:
     easy to build with.
     """
 
-    def __init__(self):
+    def __init__(self, **kwargs):
+        self.update: str = str()
         self.select: str = str()
         self.select_from: str = str()
         self.columns: tuple[str] = tuple()
@@ -47,6 +48,10 @@ class SqlCommand:
         self.top: bool = False
         self.values: list[str] = []
 
+        for key, value in kwargs.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
+
     def __repr__(self):
         """
         Represents itself in pure SQL, concatenating
@@ -61,7 +66,7 @@ class SqlCommand:
         all the parameters and configs set in the
         instance
         """
-        return self.format_as_sql()
+        return self.__repr__()
 
     def format_as_sql(self):
         output: list = []
@@ -250,10 +255,10 @@ class SqlCommand:
 
     @on.setter
     def on(self, value):
-        if not isinstance(value, dict):
-            raise AttributeError(
-                "The ON condition must be dict as they are key-value pairs")
-        self._on = serialize_dict(value)
+        if not isinstance(value, SqlConditon):
+            raise AttributeError("The ON condition must be "
+                                 "of type 'SqlCondition'")
+        self._on = value
 
     @property
     def asc(self):
