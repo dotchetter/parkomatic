@@ -181,10 +181,10 @@ class SqlCommand:
 
     @where.setter
     def where(self, value: dict):
-        if not isinstance(value, dict):
-            raise AttributeError(
-                "The WHERE condition must be dict as they are key-value pairs")
-        self._where = serialize_dict(value, delimiter=" ")
+        if not isinstance(value, SqlConditon):
+            raise AttributeError("The WHERE condition must be "
+                                 "of type 'SqlCondition'")
+        self._where = value
 
     @property
     def inner_join(self):
