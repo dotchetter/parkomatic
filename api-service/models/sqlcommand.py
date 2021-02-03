@@ -261,17 +261,52 @@ class SqlCommand:
         self._values = tuple(self._values)
 
 
-if __name__ == "__main__":
-    get_device_id = SqlCommand()
-    get_device_id.select = "id"
-    get_device_id.select_from = "devices"
-    get_device_id.where = {"device_id": "device_id_here"}
+class SqlConditon:
+    """
+    The SqlConditon class is an object
+    designed to represent a WHERE, SET
+    or other 'x = y' statement in SQL
+    queries, where it is created and
+    constructed in a dict-like manner.
 
-    insert_message = SqlCommand()
-    insert_message.insert_into = "users"
-    insert_message.columns = (user.columns)
-    insert_message.values = (user.values)
+    The SqlContidion class however,
+    supports duplicate key occurances
+    which is its primary strength.
 
-    for i in dir(insert_message):
-        if getattr(insert_message, i):
-            print(i, getattr(insert_message, i))
+    It also represents itself post-
+    instantiation in a correct SQL
+    syntax to be used within a SQL query.
+    """
+
+    def __init__(self, **kwargs):
+        self._keys = []
+        self._values = []
+        self._content = []
+
+        for key, value in kwargs:
+            self.__setitem__(key, value)
+
+    def __repr__(self):
+        return str(" ").join(self._content)
+
+    def __setitem__(self, key, value):
+        self._keys.append(key)
+        self._values.append(value)
+
+        if key.lower().strip() == "and" and value is True:
+            self._content.append("AND")
+        elif key.lower().strip() == "or" and value is True:
+            self._content.append("OR")
+        elif isinstance(value, SqlCommand):
+            self._content.append(f"{key} = ({value})")
+        else:
+            value = f"'{value}'" if "-" or "_" in value else value
+            self._content.append(f"{key} = {value}")
+
+    def __bool__(self):
+        """
+        Returns True if any conditions are
+        stored in the instance, otherwise
+        False.
+        """
+        return True if repr(self) else False
