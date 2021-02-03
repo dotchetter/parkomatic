@@ -113,28 +113,33 @@ class DataLayer(DbClientABC):
         """
         #setattr(self, )
         pass
+
+
 if __name__ == "__main__":
+
     load_dotenv()
 
-    new_user = User()
-    new_user.username = "foo"
-    new_user.email = "foo@gmail.com"
-    new_user.password = Password("foobar")
+    my_user = User()
+    my_user.username = "simon"
+    my_user.email = ""
+    my_user.user_id = ""
 
-    insert_cmd = SqlCommand()
-    insert_cmd.insert_into = getenv("UsersTable")
-    insert_cmd.columns = new_user.columns
-    insert_cmd.values = new_user.values
+    my_device = Device()
+    my_device.device_id = ""
 
-    user_columns_cmd = SqlCommand()
-    user_columns_cmd.select = "COLUMN_NAME"
-    user_columns_cmd.select_from = getenv("SchemaColumns")
-    user_columns_cmd.where = {"TABLE_NAME": "'users'"}
+    user_where = SqlConditon()
+    user_where["user_id"] = my_user.user_id
 
-    print(user_columns_cmd)
+    update_device_owner_cmd = SqlCommand()
+    update_device_owner_cmd.update = getenv("DevicesTable")
+    update_device_owner_cmd.set = SqlConditon()
+    update_device_owner_cmd.set["user_id"] = SqlCommand(select="id",
+                                                        select_from=getenv("UsersTable"),
+                                                        where=user_where)
+    update_device_owner_cmd.where = SqlConditon()
+    update_device_owner_cmd.where["device_id"] = my_device.device_id
 
-    get_devices_cmd = SqlCommand()
-    get_devices_cmd.select = "*"
-    get_devices_cmd.select_from = getenv("DevicesTable")
+    print(update_device_owner_cmd)
 
-    print(execute_sql_command(user_columns_cmd))
+    datalayer = DataLayer(getenv("SqlConnectionString"))
+    datalayer.execute(update_device_owner_cmd)
