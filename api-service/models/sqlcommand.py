@@ -1,6 +1,4 @@
-def serialize_dict(source: dict[str: str], delimiter=", ") -> str:
-    """
-        Serializes a dictionary with K:V structure
+import warnings
         to SQL compatible format, that is:
         "X = Y AND Z = A AND [...]"
         """
@@ -34,7 +32,8 @@ class SqlCommand:
         self.select: str = str()
         self.select_from: str = str()
         self.columns: tuple[str] = tuple()
-        self.where: dict[str: str] = {}
+        self.where = SqlConditon()
+        self.set = SqlConditon()
         self.inner_join: str = str()
         self.outer_join: str = str()
         self.left_join: str = str()
@@ -42,7 +41,7 @@ class SqlCommand:
         self.full_join: str = str()
         self.order_by: str = str()
         self.insert_into: str = str()
-        self.on: dict[str: str] = {}
+        self.on = SqlConditon()
         self.asc: bool = False
         self.desc: bool = False
         self.top: bool = False
@@ -67,15 +66,30 @@ class SqlCommand:
     def format_as_sql(self):
         output: list = []
 
-        if self.select:
-            output.append("SELECT")
+        if self.update:
+            if not self.set:
+                raise AttributeError("key-value pair missing for "
+                                     "SET statement: 'SET x = y'")
+
+            output.append(f"UPDATE {self.update} SET {self.set}")
+
+            if not self.where:
+                warnings.warn("WARNING: WHERE clause omitted. This will cause "
+                              "the UPDATE statement to affect ALL matching "
+                              "records resulting in the query. ")
+            else:
+                output.append(f"WHERE {self.where}")
+
+        elif self.select:
             if not self.top and not self.select_from:
                 raise AttributeError(
                     "Column(s) missing for FROM statement: 'select_from'")
+            output.append("SELECT")
 
             if self.top:
-                output.append(f"{self.select} ({self.top}) {', '.join(self.columns)} "
-                              f"FROM {self.select_from}")
+                output.append(
+                    f"{self.select} ({self.top}) {', '.join(self.columns)} "
+                    f"FROM {self.select_from}")
             else:
                 output.append(f"{self.select} FROM {self.select_from}")
 
@@ -84,8 +98,8 @@ class SqlCommand:
 
             if self.inner_join or self.left_join or self.right_join or self.full_join:
                 if not self.on:
-                    raise AttributeError(
-                        "Inner join requires the ON condition: 'on'")
+                    raise AttributeError("Inner join requires the ON "
+                                         "condition: 'on'")
 
                 if self.inner_join:
                     output.append(f"INNER JOIN {self.inner_join}")
@@ -107,10 +121,31 @@ class SqlCommand:
 
         elif self.insert_into:
             if not self.columns:
-                raise AttributeError("Columns missing for the INSERT statement")
-            output.append(f"INSERT INTO {self.insert_into} {self.columns} VALUES {self.values}")
+                raise AttributeError(
+                    "Columns missing for the INSERT statement")
+            output.append(
+                f"INSERT INTO {self.insert_into} {self.columns} VALUES {self.values}")
 
         return " ".join(output)
+
+    @property
+    def update(self):
+        return self._update
+
+    @update.setter
+    def update(self, value):
+        self._update = value
+
+    @property
+    def set(self):
+        return self._set
+
+    @set.setter
+    def set(self, value: dict):
+        if not isinstance(value, SqlConditon):
+            raise AttributeError("The SET condition must be "
+                                 "of type 'SqlCondition'")
+        self._set = value
 
     @property
     def select(self):
