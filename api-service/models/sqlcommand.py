@@ -1,16 +1,4 @@
 import warnings
-        to SQL compatible format, that is:
-        "X = Y AND Z = A AND [...]"
-        """
-    output = []
-    for key, value in source.items():
-        if key.lower() == "and" and value is True:
-            output.append("AND")
-        elif key.lower() == "or" and value is True:
-            output.append("OR")
-        else:
-            output.append(f"{key} = {value}")
-    return delimiter.join(output)
 
 
 class SqlCommand:

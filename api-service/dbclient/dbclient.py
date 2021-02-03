@@ -1,27 +1,15 @@
+from abc import ABC
+from typing import Any
+import abc
 from models.password import Password
 from models.tables import Device, Message, User
-from models.sqlcommand import SqlCommand
+from models.sqlcommand import SqlCommand, SqlConditon
 from dotenv import load_dotenv
 from os import getenv
 import pyodbc
 
 
-def execute_sql_command(cmd: SqlCommand) -> list:
-    """
-
-    """
-    output: list
-
-    with pyodbc.connect(getenv("SqlConnectionString")) as client:
-        cursor = client.cursor()
-        cursor.execute(str(cmd))
-        output = [i for i in cursor]
-        client.commit()
-
-    return output
-
-
-class DbClientABC:
+class DbClientABC(ABC):
     """
     SQL command executing abstract class.
 
@@ -31,7 +19,7 @@ class DbClientABC:
     app in question and the database in use.
     """
     @abc.abstractmethod
-    def _execute_command(self, cmd: SqlCommand) -> Any:
+    def execute(self, cmd: SqlCommand) -> Any:
         """
         Private method - meant for internal
         calls.
@@ -111,7 +99,7 @@ class DataLayer(DbClientABC):
         :returns:
             None
         """
-        #setattr(self, )
+        # setattr(self, )
         pass
 
 
