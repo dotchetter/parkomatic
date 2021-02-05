@@ -92,14 +92,7 @@ class DbManager(DbClientABC):
         and update their values depending on use case.
 
         :param cmd:
-            SqlCommand or str to store
-        :param alias:
-            str, alias which will be assigned using
-            setattr
-        :returns:
-            None
         """
-        # setattr(self, )
         pass
 
 
@@ -145,7 +138,7 @@ if __name__ == "__main__":
     update_device_owner_cmd.where = SqlConditon()
     update_device_owner_cmd.where["device_id"] = my_device.device_id
 
-    print(update_device_owner_cmd)
+    #print(update_device_owner_cmd)
 
-    datalayer = DataLayer(getenv("SqlConnectionString"))
-    datalayer.execute(update_device_owner_cmd)
+    db = DbManager(getenv("SqlConnectionString"))
+    # db.execute(update_device_owner_cmd)
