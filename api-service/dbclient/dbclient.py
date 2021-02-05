@@ -103,6 +103,17 @@ class DataLayer(DbClientABC):
         pass
 
 
+class SqlQuery:
+    """
+    The SqlQuery class represents
+    a way to store SqlCommand and SqlCondition
+    objects in a configured way, for example
+    creating or deleting records, updates
+    or otherwise stored queries.
+    """
+
+
+
 if __name__ == "__main__":
 
     load_dotenv()
