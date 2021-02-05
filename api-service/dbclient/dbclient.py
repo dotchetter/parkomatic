@@ -129,6 +129,13 @@ if __name__ == "__main__":
     user_where = SqlConditon()
     user_where["user_id"] = my_user.user_id
 
+    delete_user_cmd = SqlCommand()
+    delete_user_cmd.delete_from = getenv("UsersTable")
+    delete_user_cmd.where = SqlConditon()
+    delete_user_cmd.where["email"] = my_user.email
+
+    print(delete_user_cmd)
+
     update_device_owner_cmd = SqlCommand()
     update_device_owner_cmd.update = getenv("DevicesTable")
     update_device_owner_cmd.set = SqlConditon()
