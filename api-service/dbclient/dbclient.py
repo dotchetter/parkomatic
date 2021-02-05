@@ -34,7 +34,7 @@ class DbClientABC(ABC):
         pass
 
 
-class DataLayer(DbClientABC):
+class DbManager(DbClientABC):
     """
     Parkomatic backend database
     interaction object.
