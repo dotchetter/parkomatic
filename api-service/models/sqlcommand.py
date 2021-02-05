@@ -1,6 +1,57 @@
 import warnings
 
 
+class SqlConditon:
+    """
+    The SqlConditon class is an object
+    designed to represent a WHERE, SET
+    or other 'x = y' statement in SQL
+    queries, where it is created and
+    constructed in a dict-like manner.
+
+    The SqlContidion class however,
+    supports duplicate key occurances
+    which is its primary strength.
+
+    It also represents itself post-
+    instantiation in a correct SQL
+    syntax to be used within a SQL query.
+    """
+
+    def __init__(self, **kwargs):
+        self._keys = []
+        self._values = []
+        self._content = []
+
+        for key, value in kwargs:
+            self.__setitem__(key, value)
+
+    def __repr__(self):
+        return str(" ").join(self._content)
+
+    def __setitem__(self, key, value):
+        self._keys.append(key)
+        self._values.append(value)
+
+        if key.lower().strip() == "and" and value is True:
+            self._content.append("AND")
+        elif key.lower().strip() == "or" and value is True:
+            self._content.append("OR")
+        elif isinstance(value, SqlCommand):
+            self._content.append(f"{key} = ({value})")
+        else:
+            value = f"'{value}'" if "-" or "_" in value else value
+            self._content.append(f"{key} = {value}")
+
+    def __bool__(self):
+        """
+        Returns True if any conditions are
+        stored in the instance, otherwise
+        False.
+        """
+        return True if repr(self) else False
+
+
 class SqlCommand:
     """
     The SqlCommand class is an object oriented
@@ -19,6 +70,7 @@ class SqlCommand:
     def __init__(self, **kwargs):
         self.update: str = str()
         self.select: str = str()
+        self.delete_from: str = str()
         self.select_from: str = str()
         self.columns: tuple[str] = tuple()
         self.where = SqlConditon()
@@ -57,43 +109,51 @@ class SqlCommand:
         return self.__repr__()
 
     def format_as_sql(self):
+        """
+        Structure a string containing the
+        statement based on the provided logic
+        using the different property methods
+        in the class.
+
+        """
         output: list = []
 
+        if self.delete_from:
+            output.append(f"DELETE FROM {self.delete_from}")
+            if not self.where:
+                warnings.warn("WARNING: WHERE clause omitted. This will cause "
+                              "the DELETE statement to affect ALL matching "
+                              "records resulting in the query. ")
+            else:
+                output.append(f"WHERE {self.where}")
         if self.update:
             if not self.set:
                 raise AttributeError("key-value pair missing for "
                                      "SET statement: 'SET x = y'")
-
             output.append(f"UPDATE {self.update} SET {self.set}")
-
             if not self.where:
                 warnings.warn("WARNING: WHERE clause omitted. This will cause "
                               "the UPDATE statement to affect ALL matching "
                               "records resulting in the query. ")
             else:
                 output.append(f"WHERE {self.where}")
-
         elif self.select:
             if not self.top and not self.select_from:
                 raise AttributeError(
                     "Column(s) missing for FROM statement: 'select_from'")
             output.append("SELECT")
-
             if self.top:
                 output.append(
                     f"{self.select} ({self.top}) {', '.join(self.columns)} "
                     f"FROM {self.select_from}")
             else:
                 output.append(f"{self.select} FROM {self.select_from}")
-
             if self.where:
                 output.append(f"WHERE {self.where}")
-
             if self.inner_join or self.left_join or self.right_join or self.full_join:
                 if not self.on:
                     raise AttributeError("Inner join requires the ON "
                                          "condition: 'on'")
-
                 if self.inner_join:
                     output.append(f"INNER JOIN {self.inner_join}")
                 elif self.full_join:
@@ -102,16 +162,13 @@ class SqlCommand:
                     output.append(f"RIGHT JOIN {self.right_join}")
                 elif self.left_join:
                     output.append(f"LEFT JOIN {self.left_join}")
-
                 output.append(f"ON {self.on}")
-
             if self.order_by:
                 output.append(f"ORDER BY {self.order_by}")
                 if self.asc:
                     output.append("ASC")
                 elif self.desc:
                     output.append("DESC")
-
         elif self.insert_into:
             if not self.columns:
                 raise AttributeError(
@@ -134,7 +191,7 @@ class SqlCommand:
         return self._set
 
     @set.setter
-    def set(self, value: dict):
+    def set(self, value: SqlConditon):
         if not isinstance(value, SqlConditon):
             raise AttributeError("The SET condition must be "
                                  "of type 'SqlCondition'")
@@ -149,6 +206,14 @@ class SqlCommand:
         if isinstance(value, tuple) or isinstance(value, list):
             value = ", ".join(value)
         self._select = value
+
+    @property
+    def delete_from(self):
+        return self._delete_from
+
+    @delete_from.setter
+    def delete_from(self, value):
+        self._delete_from = value
 
     @property
     def select_from(self):
@@ -173,7 +238,7 @@ class SqlCommand:
         return self._where
 
     @where.setter
-    def where(self, value: dict):
+    def where(self, value: SqlConditon):
         if not isinstance(value, SqlConditon):
             raise AttributeError("The WHERE condition must be "
                                  "of type 'SqlCondition'")
@@ -279,62 +344,9 @@ class SqlCommand:
     @values.setter
     def values(self, value):
         self._values = []
-
         for i in value:
             if isinstance(i, SqlCommand):
                 self._values.append(f"({i})")
             else:
                 self._values.append(i)
-
         self._values = tuple(self._values)
-
-
-class SqlConditon:
-    """
-    The SqlConditon class is an object
-    designed to represent a WHERE, SET
-    or other 'x = y' statement in SQL
-    queries, where it is created and
-    constructed in a dict-like manner.
-
-    The SqlContidion class however,
-    supports duplicate key occurances
-    which is its primary strength.
-
-    It also represents itself post-
-    instantiation in a correct SQL
-    syntax to be used within a SQL query.
-    """
-
-    def __init__(self, **kwargs):
-        self._keys = []
-        self._values = []
-        self._content = []
-
-        for key, value in kwargs:
-            self.__setitem__(key, value)
-
-    def __repr__(self):
-        return str(" ").join(self._content)
-
-    def __setitem__(self, key, value):
-        self._keys.append(key)
-        self._values.append(value)
-
-        if key.lower().strip() == "and" and value is True:
-            self._content.append("AND")
-        elif key.lower().strip() == "or" and value is True:
-            self._content.append("OR")
-        elif isinstance(value, SqlCommand):
-            self._content.append(f"{key} = ({value})")
-        else:
-            value = f"'{value}'" if "-" or "_" in value else value
-            self._content.append(f"{key} = {value}")
-
-    def __bool__(self):
-        """
-        Returns True if any conditions are
-        stored in the instance, otherwise
-        False.
-        """
-        return True if repr(self) else False
