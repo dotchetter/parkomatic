@@ -1,6 +1,7 @@
 import uuid
 from models.password import Password
-from models.sqlserializable import SqlSerializable
+from crunchsql import SqlSerializable
+from crunchsql import SqlProperty
 
 
 class Message(SqlSerializable):
@@ -41,7 +42,7 @@ class Message(SqlSerializable):
     @device_id.setter
     def device_id(self, value):
         self._device_id = value
-        self.sql_properties["device_id"] = self._device_id
+        self.sql_properties["device_id"] = SqlProperty(value=self.device_id, pos=1)
 
     @property
     def epochtime(self):
@@ -59,13 +60,22 @@ class Device(SqlSerializable):
     the Parkomatic system platform.
     """
 
-    def __init__(self):
+    def __init__(self, id: int = None,
+                 device_id: str = None,
+                 user_id: int = None):
         super().__init__()
-        self.device_id: str = str()
-        self.user_id: str = str()
+        self.id = id
+        self.user_id = user_id
+        self.device_id = device_id
 
-    def __repr__(self):
-        return f"Device(size: {self.__sizeof__()}b, device_id: {self._device_id})"
+    @property
+    def user_id(self) -> str:
+        return self._user_id
+
+    @user_id.setter
+    def user_id(self, value: str):
+        self._user_id = value
+        self.sql_properties["user_id"] = SqlProperty(self.user_id, pos=1)
 
     @property
     def device_id(self) -> str:
@@ -74,42 +84,34 @@ class Device(SqlSerializable):
     @device_id.setter
     def device_id(self, value: str):
         self._device_id = value
-        self.sql_properties["device_id"] = self._device_id
-
-    @property
-    def user_id(self) -> str:
-        return self._user_id
-
-    @user_id.setter
-    def user_id(self, value: str):
-        self._user_id = value
-        self.sql_properties["user_id"] = self._user_id
+        self.sql_properties["device_id"] = SqlProperty(self.device_id, pos=2)
 
 
 class User(SqlSerializable):
     """
-    This model represents a user, plain and
-    simple.
-    Password can be assigned but will be hashed
-    upon assignment to the property. This way, the
-    plaintext password is never stored and has a limited
-    lifespan of the local scope of the parameter to the
-    setter method.
+    This model represents a user,
+    plain and simple.
     """
 
     # noinspection PyTypeChecker
-    def __init__(self, username: str = str(), email: str = str()):
+    def __init__(self, id: int = None,
+                 user_id: str = None,
+                 username: str = None,
+                 hashed_password: str = None,
+                 email: str = None,
+                 password_salt: str = None):
         super().__init__()
-        self.username: str = username
-        self.email: str = email
-        self.password: Password = Password()
-        self.user_id = str(uuid.uuid4())
 
-    def __repr__(self) -> str:
-        return f"User(size: {self.__sizeof__()}b, user_id: {self._user_id})"
+        self.id = id
+        self.username = username
+        self.email = email
+        self.user_id = user_id if user_id else str(uuid.uuid4())
 
-    def __str__(self) -> str:
-        return f"username: {self._username}, email: {self._email}"
+        if hashed_password and password_salt:
+            self.password = Password(hashed_password=hashed_password,
+                                     salt_hex=password_salt)
+        else:
+            self.password = Password()
 
     @property
     def username(self) -> str:
@@ -118,7 +120,8 @@ class User(SqlSerializable):
     @username.setter
     def username(self, value: str):
         self._username = value
-        self.sql_properties["username"] = self._username
+        self.sql_properties["username"] = SqlProperty(value=self.username,
+                                                      pos=2)
 
     @property
     def email(self) -> str:
@@ -127,7 +130,8 @@ class User(SqlSerializable):
     @email.setter
     def email(self, value: str):
         self._email = value
-        self.sql_properties["email"] = self._email
+        self.sql_properties["email"] = SqlProperty(value=self.email,
+                                                   pos=4)
 
     @property
     def password(self) -> Password:
@@ -135,12 +139,14 @@ class User(SqlSerializable):
 
     @password.setter
     def password(self, password: Password) -> None:
-        if not isinstance(password, Password):
-            raise AttributeError("password must be of type <Password>")
+        if not isinstance(password, Password) and isinstance(password, str):
+            password = Password(hashed_password=password)
 
         self._password = password
-        self.sql_properties["password"] = str(self._password)
-        self.sql_properties["salt"] = self._password.salt
+        self.sql_properties["password"] = SqlProperty(value=str(self.password),
+                                                      pos=3)
+        self.sql_properties["salt"] = SqlProperty(value=self.password.salt,
+                                                  pos=5)
 
     @property
     def user_id(self) -> str:
@@ -149,4 +155,13 @@ class User(SqlSerializable):
     @user_id.setter
     def user_id(self, value: str):
         self._user_id = value
-        self.sql_properties["user_id"] = self._user_id
+        self.sql_properties["user_id"] = SqlProperty(value=self.user_id,
+                                                     pos=1)
+
+    @property
+    def salt(self):
+        return self.password.salt
+
+    @salt.setter
+    def salt(self, value: str):
+        self.password.salt = value
