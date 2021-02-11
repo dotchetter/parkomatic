@@ -1,9 +1,9 @@
 import warnings
 
 
-class SqlConditon:
+class SqlCondition:
     """
-    The SqlConditon class is an object
+    The SqlCondition class is an object
     designed to represent a WHERE, SET
     or other 'x = y' statement in SQL
     queries, where it is created and
@@ -23,7 +23,7 @@ class SqlConditon:
         self._values = []
         self._content = []
 
-        for key, value in kwargs:
+        for key, value in kwargs.items():
             self.__setitem__(key, value)
 
     def __repr__(self):
@@ -73,8 +73,8 @@ class SqlCommand:
         self.delete_from: str = str()
         self.select_from: str = str()
         self.columns: tuple[str] = tuple()
-        self.where = SqlConditon()
-        self.set = SqlConditon()
+        self.where = SqlCondition()
+        self.set = SqlCondition()
         self.inner_join: str = str()
         self.outer_join: str = str()
         self.left_join: str = str()
@@ -82,7 +82,7 @@ class SqlCommand:
         self.full_join: str = str()
         self.order_by: str = str()
         self.insert_into: str = str()
-        self.on = SqlConditon()
+        self.on = SqlCondition()
         self.asc: bool = False
         self.desc: bool = False
         self.top: bool = False
@@ -108,13 +108,14 @@ class SqlCommand:
         """
         return self.__repr__()
 
-    def format_as_sql(self):
+    def format_as_sql(self) -> str:
         """
         Structure a string containing the
         statement based on the provided logic
         using the different property methods
         in the class.
-
+        :returns str:
+            Represenation of all configurations in SQL syntax
         """
         output: list = []
 
@@ -191,8 +192,8 @@ class SqlCommand:
         return self._set
 
     @set.setter
-    def set(self, value: SqlConditon):
-        if not isinstance(value, SqlConditon):
+    def set(self, value: SqlCondition):
+        if not isinstance(value, SqlCondition):
             raise AttributeError("The SET condition must be "
                                  "of type 'SqlCondition'")
         self._set = value
@@ -238,8 +239,8 @@ class SqlCommand:
         return self._where
 
     @where.setter
-    def where(self, value: SqlConditon):
-        if not isinstance(value, SqlConditon):
+    def where(self, value: SqlCondition):
+        if not isinstance(value, SqlCondition):
             raise AttributeError("The WHERE condition must be "
                                  "of type 'SqlCondition'")
         self._where = value
@@ -308,7 +309,7 @@ class SqlCommand:
 
     @on.setter
     def on(self, value):
-        if not isinstance(value, SqlConditon):
+        if not isinstance(value, SqlCondition):
             raise AttributeError("The ON condition must be "
                                  "of type 'SqlCondition'")
         self._on = value
