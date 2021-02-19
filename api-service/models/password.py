@@ -67,14 +67,4 @@ class Password:
                                  plaintext_password.encode("utf-8"),
                                  self._salt,
                                  Password.HASH_NUM_ITER)
-
         self._hashed_password = dk.hex()
-
-
-if __name__ == "__main__":
-
-    p1 = Password("password123")
-    print(p1)
-
-    p2 = Password(hashed_password=p1.hashed_password, salt_hex=p1.salt)
-    print(p2 == "password123")
