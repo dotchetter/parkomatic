@@ -18,6 +18,7 @@ class SqlSerializable:
     """
 
     def __init__(self):
+        self.id_autoincrement = False
         self.sql_properties: dict[str: SqlProperty] = {}
         self.id: int = int()
         self.columns: tuple[str] = tuple()
