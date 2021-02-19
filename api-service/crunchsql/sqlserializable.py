@@ -47,12 +47,13 @@ class SqlSerializable:
 
     @property
     def values(self) -> tuple:
+        self.__update_values()
         return self._values
 
     @values.setter
     def values(self, value: tuple):
         self.__update_columns()
-        for column, val in zip(self.columns, value):
+        for column, val in zip(self._columns, value):
             setattr(self, column, val)
         self._values = value
 
@@ -63,11 +64,24 @@ class SqlSerializable:
         the sql_properties dict configuiration,
         containing the name of all the properties
         that are created. The tuple is ordered
-        by the 'pos'property on the SqlProperty
+        by the 'pos' property on the SqlProperty
         which is the value of the given column.
-        This is so, to mimic thereturn order from
+        This is so, to mimic the return order from
         the database.
+
+        Sorts the keys in sql_properties by defined 'pos' property.
+        Truncate the 'id' property if it is autoincrement in the database,
+        rendering it redundant in the insert query.
         """
-        columns = list(self.sql_properties.keys())
-        # Sorts the keys in sql_properties by defined 'pos' property
+        if self.id_autoincrement:
+            columns = [i for i in self.sql_properties.keys() if i != "id"]
+        else:
+            columns = self.sql_properties.keys()
+
         self._columns = sorted(columns, key=lambda i: self.sql_properties[i].pos)
+
+    def __update_values(self) -> None:
+        if self.id_autoincrement:
+            self.sql_properties.pop("id")
+        properties = sorted(self.sql_properties.values(), key=lambda i: i.pos)
+        self._values = tuple([i.value for i in properties])
