@@ -46,14 +46,15 @@ class SqlQuery(ABC):
             by enclosing messages in the
             return list.
         """
-
         with pyodbc.connect(getenv("SqlConnectionString")) as client:
             cursor = client.cursor()
             cursor.execute(str(query))
 
-            try:
+            if query.insert_into or query.update:
+                client.commit()
+                output = True
+            else:
                 output = [i for i in cursor]
-            except pyodbc.ProgrammingError as e:
-                output = ["Errors occured:", e]  # TODO - design a better solution
+
             client.commit()
         return output
