@@ -1,6 +1,15 @@
 import unittest
 from usermanager import UserManager
 
+from crunchsql import SqlCondition
+from models import User, Device
+from models.password import Password
+from queries import DeviceEnroller,    \
+                    DeviceDisenroller, \
+                    DeviceFinder,      \
+                    UserFinder,        \
+                    UserRegistrator,   \
+                    DeviceRegistrator
 
 class TestUserManager(unittest.TestCase):
 

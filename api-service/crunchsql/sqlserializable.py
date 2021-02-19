@@ -1,4 +1,4 @@
-from models.sqlproperty import SqlProperty
+from crunchsql import SqlProperty
 
 
 class SqlSerializable:

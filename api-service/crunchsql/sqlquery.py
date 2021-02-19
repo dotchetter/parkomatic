@@ -1,7 +1,7 @@
 from os import getenv
 import pyodbc
 from abc import ABC, abstractmethod
-from models.sqlcommand import SqlCommand
+from crunchsql.sqlcommand import SqlCommand
 
 
 class SqlQuery(ABC):
