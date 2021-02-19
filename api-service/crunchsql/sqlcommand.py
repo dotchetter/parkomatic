@@ -30,6 +30,7 @@ class SqlCondition:
         return str(" ").join(self._content)
 
     def __setitem__(self, key, value):
+        if value is None: value = "NULL"
         self._keys.append(key)
         self._values.append(value)
 
@@ -40,7 +41,7 @@ class SqlCondition:
         elif isinstance(value, SqlCommand):
             self._content.append(f"{key} = ({value})")
         else:
-            value = f"'{value}'" if "-" or "_" in value else value
+            value = f"'{value}'" if value != "NULL" else value
             self._content.append(f"{key} = {value}")
 
     def __bool__(self):
@@ -66,7 +67,6 @@ class SqlCommand:
     statements, 'TOP' and joins make the abstractions
     easy to build with.
     """
-
     def __init__(self, **kwargs):
         self.update: str = str()
         self.select: str = str()
