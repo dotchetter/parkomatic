@@ -34,24 +34,32 @@ class UserFinder(ModelsByPropertyGenerator):
     table_name = "UsersTable"
     model = User
 
-    def __call__(self, user: User, device: Device):
 
-        check_device_owner = SqlCommand()
-        check_device_owner.select = "*"
-        check_device_owner.select_from = getenv("DevicesTable")
-        check_device_owner.where = SqlCondition(device_id=device.device_id)
+class UserRegistrator(SqlQuery):
 
+    def __call__(self, new_user: User):
         """
+        Register a new user by creating a new
+        entry in the database in the 'users'
+        table.
+        @param new_user:
+            User to add in the database.
+        @return:
+            True, if succeeded
+        @raise:
+            UsernameTakenException
+        """
+        user_finder = UserFinder()
+
+        for _ in user_finder(SqlCondition(username=new_user.username)):
+            raise UsernameTakenException
+
+        new_user.id_autoincrement = True
         cmd = SqlCommand()
-        cmd.update = getenv("DevicesTable")
-        cmd.set = SqlCondition(user_id=SqlCommand(select="id",
-                                                  select_from=getenv("Userstable"),
-                                                  where=SqlCondition(email=user.email)))
-        cmd.where = SqlCondition(device_id=device.device_id)
-        """
-
-
-if __name__ == "__main__":
+        cmd.insert_into = getenv("UsersTable")
+        cmd.columns = new_user.columns
+        cmd.values = new_user.values
+        return super().execute_sql(cmd)
 
     device_enroller = EnrollDevice()
     user_finder = GetUserByProperty()
