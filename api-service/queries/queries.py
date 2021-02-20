@@ -64,32 +64,56 @@ class UserRegistrator(SqlQuery):
     device_enroller = EnrollDevice()
     user_finder = GetUserByProperty()
 
-    condition = SqlCondition()
-    condition["username"] = "simon"
-    condition["or"] = True
-    condition["username"] = "anton"
+class DeviceRegistrator(SqlQuery):
 
-    matched = user_finder(condition)
-    print(*matched, sep="\n")
+    def __call__(self, new_device: Device):
+        """
+        Register a new device in the database.
+        """
+        device_finder = DeviceFinder()
 
+        for _ in device_finder(SqlCondition(device_id=new_device.device_id)):
+            raise DeviceAlreadyExistsException
+
+        new_device.id_autoincrement = True
+        cmd = SqlCommand()
+        cmd.insert_into = getenv("DevicesTable")
+        cmd.columns = new_device.columns
+        cmd.values = new_device.values
+        return super().execute_sql(cmd)
+
+
+class DeviceEnroller(SqlQuery):
     """
-    my_user = User()
-    my_user.username = "simon"
-    my_user.email = "dotchetter@protonmail.ch"
+    Update ownership of a device in the database
+    using the models for these tables.
 
-    my_device = Device()
-    my_device.device_id = "55b076a9-3efc-4593-9975-25f8048fa56e"
+    :raise DeviceAlreadyEnrolledException:
+        In case a device is encountered to already be
+        enrolled with a user
+    """
 
-    anton = User()
-    anton.email = "annoiot19@gmail.com"
+    def __call__(self, new_owner: User, device: Device):
+        device_finder = DeviceFinder()
 
-    antons_device = Device()
-    antons_device.device_id = "2ce2fa33-4abc-4a77-bc3e-aa50b3e2ec88"
+        # Check if device is already enrolled with a user
+        for _ in device_finder(SqlCondition(device_id=device.device_id)):
+            raise DeviceAlreadyEnrolledException
 
-    user_where = SqlConditon()
-    user_where["user_id"] = my_user.user_id
+        # Configure the inner command which isolates 'id' for the user
+        find_user_cmd = SqlCommand()
+        find_user_cmd.select = "id"
+        find_user_cmd.select_from = getenv("UsersTable")
+        find_user_cmd.where = SqlCondition(email=new_owner.username)
 
-    delete_user_cmd = SqlCommand()
+        # Configure the outer, wrapping command
+        cmd = SqlCommand()
+        cmd.update = getenv("DevicesTable")
+        cmd.set = SqlCondition()
+        cmd.set["user_id"] = find_user_cmd
+        cmd.where = SqlCondition(device_id=device.device_id)
+
+        return super().execute_sql(cmd)
     delete_user_cmd.delete_from = getenv("UsersTable")
     delete_user_cmd.where = SqlConditon()
     delete_user_cmd.where["email"] = my_user.email
