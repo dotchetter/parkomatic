@@ -75,7 +75,7 @@ class Device(SqlSerializable):
     @user_id.setter
     def user_id(self, value: str):
         self._user_id = value
-        self.sql_properties["user_id"] = SqlProperty(self.user_id, pos=1)
+        self.sql_properties["user_id"] = SqlProperty(self.user_id, pos=2)
 
     @property
     def device_id(self) -> str:
@@ -84,7 +84,7 @@ class Device(SqlSerializable):
     @device_id.setter
     def device_id(self, value: str):
         self._device_id = value
-        self.sql_properties["device_id"] = SqlProperty(self.device_id, pos=2)
+        self.sql_properties["device_id"] = SqlProperty(self.device_id, pos=1)
 
 
 class User(SqlSerializable):
