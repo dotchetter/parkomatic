@@ -114,22 +114,22 @@ class DeviceEnroller(SqlQuery):
         cmd.where = SqlCondition(device_id=device.device_id)
 
         return super().execute_sql(cmd)
-    delete_user_cmd.delete_from = getenv("UsersTable")
-    delete_user_cmd.where = SqlConditon()
-    delete_user_cmd.where["email"] = my_user.email
 
-    print(delete_user_cmd)
 
-    update_device_owner_cmd = SqlCommand()
-    update_device_owner_cmd.update = getenv("DevicesTable")
-    update_device_owner_cmd.set = SqlConditon()
-    update_device_owner_cmd.set["user_id"] = SqlCommand(select="id",
-                                                        select_from=getenv("UsersTable"),
-                                                        where=user_where)
-    update_device_owner_cmd.where = SqlConditon()
-    update_device_owner_cmd.where["device_id"] = my_device.device_id
-
-    print(update_device_owner_cmd)
-
-    db = DbManager(getenv("SqlConnectionString"))
+class DeviceDisenroller(SqlQuery):
     """
+    Disenroll the device from current owner,
+    making the device available for enrollment
+    for other users.
+    """
+
+    def __call__(self, device: Device):
+        device_finder = DeviceFinder()
+        cmd = SqlCommand()
+
+        cmd.update = getenv("DevicesTable")
+        cmd.set = SqlCondition(user_id=None)
+        cmd.where = SqlCondition(device_id=device.device_id)
+
+        for i in device_finder(where=SqlCondition(device_id=device.device_id)):
+            if i: return SqlQuery.execute_sql(cmd)
