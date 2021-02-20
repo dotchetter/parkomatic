@@ -61,8 +61,6 @@ class UserRegistrator(SqlQuery):
         cmd.values = new_user.values
         return super().execute_sql(cmd)
 
-    device_enroller = EnrollDevice()
-    user_finder = GetUserByProperty()
 
 class DeviceRegistrator(SqlQuery):
 
