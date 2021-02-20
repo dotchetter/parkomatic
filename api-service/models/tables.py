@@ -66,7 +66,7 @@ class Device(SqlSerializable):
         super().__init__()
         self.id = id
         self.user_id = user_id
-        self.device_id = device_id
+        self.device_id = device_id if device_id else uuid.uuid4()
 
     @property
     def user_id(self) -> str:
