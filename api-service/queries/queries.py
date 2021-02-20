@@ -1,39 +1,38 @@
-from models.password import Password
-from models.sqlserializable import SqlSerializable
 from os import getenv
-from models.sqlquery import SqlQuery
-from models.tables import Device, Message, User
-from models.sqlcommand import SqlCommand, SqlCondition
+from models.tables import Device, User
+from crunchsql import SqlCommand, SqlCondition, SqlQuery, SqlSerializable
+from exceptions.queryexception import DeviceAlreadyEnrolledException
+from exceptions.queryexception import DeviceAlreadyExistsException
+from exceptions.queryexception import UsernameTakenException
 
 
-class GetUserByProperty(SqlQuery):
-    """
-    Returns User() model instances serialized
-    from data returned upon given query from
-    the SQL database.
-    """
+class ModelsByPropertyGenerator(SqlQuery):
+    table_name = str()
+    model = SqlSerializable
 
-    def __call__(self, condition: SqlCondition) -> list[User]:
-
-        output = []
+    def __call__(self, where=SqlCondition()) -> list[SqlSerializable]:
         cmd = SqlCommand()
         cmd.select = "*"
-        cmd.select_from = getenv("UsersTable")
-        cmd.where = condition
-        cmd.columns = User().columns
+        cmd.select_from = getenv(self.__class__.table_name)
+        if where: cmd.where = where
+        cmd.columns = self.__class__.model().columns
 
-        for db_user_data in SqlQuery.execute_sql(cmd):
-            user = User()
-            user.values = db_user_data
-            output.append(user)
-        return output
+        for db_data in self.execute_sql(cmd):
+            obj = self.__class__.model()
+            obj.values = db_data
+            yield obj
 
 
-class EnrollDevice(SqlQuery):
-    """
-    Update ownership of a device in the database
-    using the models for these tables.
-    """
+class DeviceFinder(ModelsByPropertyGenerator):
+
+    table_name = "DevicesTable"
+    model = Device
+
+
+class UserFinder(ModelsByPropertyGenerator):
+
+    table_name = "UsersTable"
+    model = User
 
     def __call__(self, user: User, device: Device):
 
