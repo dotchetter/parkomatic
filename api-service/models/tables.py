@@ -98,16 +98,17 @@ class User(SqlSerializable):
                  user_id: str = None,
                  username: str = None,
                  hashed_password: str = None,
-                 email: str = None,
-                 password_salt: str = None):
+                 password_salt: str = None,
+                 password: Password = None):
         super().__init__()
 
         self.id = id
         self.username = username
-        self.email = email
         self.user_id = user_id if user_id else str(uuid.uuid4())
 
-        if hashed_password and password_salt:
+        if password is not None:
+            self.password = password
+        elif hashed_password and password_salt:
             self.password = Password(hashed_password=hashed_password,
                                      salt_hex=password_salt)
         else:
@@ -122,16 +123,6 @@ class User(SqlSerializable):
         self._username = value
         self.sql_properties["username"] = SqlProperty(value=self.username,
                                                       pos=2)
-
-    @property
-    def email(self) -> str:
-        return self._email
-
-    @email.setter
-    def email(self, value: str):
-        self._email = value
-        self.sql_properties["email"] = SqlProperty(value=self.email,
-                                                   pos=4)
 
     @property
     def password(self) -> Password:
