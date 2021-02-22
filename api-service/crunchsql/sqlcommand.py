@@ -228,14 +228,6 @@ class SqlCommand:
         self._select_from = value
 
     @property
-    def columns(self):
-        return self._columns
-
-    @columns.setter
-    def columns(self, value):
-        self._columns = value
-
-    @property
     def where(self):
         return self._where
 
