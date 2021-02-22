@@ -79,7 +79,7 @@ class SqlSerializable:
         else:
             columns = self.sql_properties.keys()
 
-        self._columns = sorted(columns, key=lambda i: self.sql_properties[i].pos)
+        self._columns = tuple(sorted(columns, key=lambda i: self.sql_properties[i].pos))
 
     def __update_values(self) -> None:
         if self.id_autoincrement:
