@@ -26,7 +26,7 @@ class SqlSerializable:
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(size: {self.__sizeof__()}b" \
-               f", columns: {self.columns}, values: {self.values}"
+               f", columns: {self.columns}, values: {self.values})"
 
     @property
     def id(self):
