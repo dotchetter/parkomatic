@@ -178,7 +178,7 @@ class SqlCommand:
             output.append(
                 f"INSERT INTO {self.insert_into} {self.columns} VALUES {self.values}")
 
-        return " ".join(output)
+        return str(" ").join(output)
 
     @property
     def update(self):
@@ -206,7 +206,7 @@ class SqlCommand:
     @select.setter
     def select(self, value):
         if isinstance(value, tuple) or isinstance(value, list):
-            value = ", ".join(value)
+            value = str(", ").join(value)
         self._select = value
 
     @property
@@ -224,7 +224,7 @@ class SqlCommand:
     @select_from.setter
     def select_from(self, value):
         if isinstance(value, tuple) or isinstance(value, list):
-            value = ", ".join(value)
+            value = str(", ").join(value)
         self._select_from = value
 
     @property
@@ -285,7 +285,7 @@ class SqlCommand:
     @order_by.setter
     def order_by(self, value):
         if isinstance(value, tuple) or isinstance(value, list):
-            value = ", ".join(value)
+            value = str(", ").join(value)
         self._order_by = value
 
     @property
