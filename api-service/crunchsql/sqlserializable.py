@@ -38,9 +38,9 @@ class SqlSerializable:
         self.sql_properties["id"] = SqlProperty(value=self.id, pos=0)
 
     @property
-    def columns(self) -> str:
+    def columns(self) -> tuple:
         self.__update_columns()
-        return f"({str(', ').join(self._columns)})"
+        return self._columns
 
     @columns.setter
     def columns(self, value: tuple):
