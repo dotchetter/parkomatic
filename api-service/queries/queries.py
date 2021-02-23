@@ -95,8 +95,9 @@ class DeviceEnroller(SqlQuery):
         device_finder = DeviceFinder()
 
         # Check if device is already enrolled with a user
-        for _ in device_finder(SqlCondition(device_id=device.device_id)):
-            raise DeviceAlreadyEnrolledException
+        for d in device_finder(SqlCondition(device_id=device.device_id)):
+            if d.user_id is not None:
+                raise DeviceAlreadyEnrolledException
 
         # Configure the inner command which isolates 'id' for the user
         find_user_cmd = SqlCommand()
