@@ -1,8 +1,6 @@
 from typing import Any
-from dataclasses import dataclass
 
 
-@dataclass
 class SqlProperty:
     """
     The SqlProperty class represents
@@ -23,5 +21,22 @@ class SqlProperty:
     field binding.
     """
 
-    value: Any
-    pos: int
+    def __init__(self, value: Any, pos: int):
+        self._value = value
+        self._pos = pos
+
+    @property
+    def value(self) -> Any:
+        return "NULL" if self._value is None else self._value
+
+    @value.setter
+    def value(self, value: Any):
+        self._value = value
+
+    @property
+    def pos(self) -> int:
+        return self._pos
+
+    @pos.setter
+    def pos(self, value: int):
+        self._pos = value
