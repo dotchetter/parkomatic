@@ -178,7 +178,7 @@ class SqlCommand:
             output.append(
                 f"INSERT INTO {self.insert_into} {self.columns} VALUES {self.values}")
 
-        return str(" ").join(output)
+        return str(" ").join(output) if output else super().__repr__()
 
     @property
     def update(self):
