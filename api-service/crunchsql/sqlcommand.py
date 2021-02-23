@@ -332,15 +332,41 @@ class SqlCommand:
         self._top = value
 
     @property
-    def values(self):
-        return self._values
+    def columns(self):
+        return f"({str(', ').join(self._columns)})"
+
+    @columns.setter
+    def columns(self, value):
+        self._columns = value
+
+    @property
+    def values(self) -> str:
+        """
+        Formats all elements in self._values with surrounding
+        ( ' ) characters to support any kind of character
+        sequence in the Sql query, unless the value is NULL
+        in which case it will be kept as just NULL.
+        """
+        output = [f"'{i}'" if i != "NULL" else i for i in self._values]
+        return f"({str(', ').join(output)})"
 
     @values.setter
-    def values(self, value):
-        self._values = []
-        for i in value:
-            if isinstance(i, SqlCommand):
-                self._values.append(f"({i})")
-            else:
-                self._values.append(i)
-        self._values = tuple(self._values)
+    def values(self, value: Any):
+        """
+        Assign the values provided in the parameter
+        'value'. Surround the value with '()' if an
+        element is of type SqlCommand, since this
+        indicates a nested command inside another.
+        For this to work, the inner command need to be
+        enclosed in parenthesis.
+        @param value: Any
+        @return:
+        None
+        """
+        _values = []
+        try:
+            for i in value:
+                _values.append(f"({i})" if isinstance(i, SqlCommand) else i)
+        except TypeError:
+            _values.append(value)
+        self._values = tuple(_values)
