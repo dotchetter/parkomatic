@@ -103,7 +103,7 @@ class DeviceEnroller(SqlQuery):
         find_user_cmd = SqlCommand()
         find_user_cmd.select = "id"
         find_user_cmd.select_from = getenv("UsersTable")
-        find_user_cmd.where = SqlCondition(email=new_owner.username)
+        find_user_cmd.where = SqlCondition(username=new_owner.username)
 
         # Configure the outer, wrapping command
         cmd = SqlCommand()
