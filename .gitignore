@@ -298,3 +298,8 @@ __pycache__/
 
 # Dev notes
 private_notes.txt
+*.env*
+
+# Django files
+api-service/parkomaticapps/db.sqlite3
+venv

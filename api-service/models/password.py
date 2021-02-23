@@ -16,19 +16,18 @@ class Password:
 
     HASH_NUM_ITER = 1000000
 
-    def __init__(self, plaintext_password: str = None):
-        self._hashed_password: str
-        self._salt: bytes
+    def __init__(self, plaintext_password=str(),
+                 hashed_password=str(),
+                 salt_hex=str()):
+
+        self._hashed_password = hashed_password
+        self._salt = bytes().fromhex(salt_hex) if salt_hex else bytes()
         self._created_at: datetime = datetime.now()
 
         if plaintext_password:
             self.__hash_password(plaintext_password)
 
     def __repr__(self):
-        return f"Password(created: {self._created_at}, hash: {self._hashed_password}, " \
-               f"salt: {self._salt})"
-
-    def __str__(self):
         return self._hashed_password
 
     def __eq__(self, compare: str):
@@ -52,11 +51,15 @@ class Password:
 
     @property
     def hashed_password(self) -> str:
-        return self._hashed_password if self._hashed_password else None
+        return self._hashed_password
 
     @property
-    def salt(self) -> bytes:
-        return self._salt if self._salt else None
+    def salt(self) -> str:
+        return self._salt.hex() if self._salt else bytes().hex()
+
+    @salt.setter
+    def salt(self, value: str):
+        self._salt = bytes().fromhex(value)
 
     def __hash_password(self, plaintext_password: str) -> None:
         self._salt = secrets.token_bytes(32)
@@ -64,5 +67,4 @@ class Password:
                                  plaintext_password.encode("utf-8"),
                                  self._salt,
                                  Password.HASH_NUM_ITER)
-
         self._hashed_password = dk.hex()
