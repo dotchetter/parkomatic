@@ -62,7 +62,7 @@ class SqlSerializable:
         """
         Updates the 'columns' tuple property to
         accurately mirror the configurations of
-        the sql_properties dict configuiration,
+        the sql_properties dict configuration,
         containing the name of all the properties
         that are created. The tuple is ordered
         by the 'pos' property on the SqlProperty
